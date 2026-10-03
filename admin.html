@@ -10,11 +10,11 @@
 
 <style>
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI','Inter',Tahoma,sans-serif;
-    user-select: none;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI','Inter',Tahoma,sans-serif;
+    user-select:none;
 }
 
 body {
@@ -286,7 +286,6 @@ body {
     0%,100% {
         box-shadow:0 0 8px #a855f7;
     }
-
     50% {
         box-shadow:
             0 0 16px #a855f7,
@@ -359,15 +358,19 @@ body {
 
 <body>
 
-<!-- ФОНОВАЯ МУЗЫКА -->
+<!-- =========================
+     МУЗЫКА
+========================= -->
+
 <audio id="bgMusic" loop preload="auto">
     <source
         src="https://zxcum.skysound7.com/t/04354483850184987231-zxcum-%D0%BD%D0%B5%D0%B3%D1%80%D1%8B-%D0%B8-%D0%BF%D0%B8%D0%B4%D0%BE%D1%80%D0%B0%D1%81%D1%8B/"
-        type="audio/mpeg"
-    >
+        type="audio/mpeg">
 </audio>
 
+
 <div class="admin-wrap">
+
     <div class="admin-card">
 
         <div class="admin-header">
@@ -377,9 +380,12 @@ body {
 
         <div class="admin-body">
 
+            <!-- ФОРС-ПОБЕДИТЕЛЬ -->
             <div class="section">
 
-                <div class="title">🎯 Форс-победитель</div>
+                <div class="title">
+                    🎯 Форс-победитель
+                </div>
 
                 <div class="desc">
                     Задай ник, который гарантированно выиграет
@@ -387,15 +393,18 @@ body {
                 </div>
 
                 <div class="field">
+
                     <label>Ник на Twitch</label>
+
                     <input
                         type="text"
                         id="force-nick"
-                        placeholder="например: username"
-                    >
+                        placeholder="например: username">
+
                 </div>
 
                 <div class="field">
+
                     <label>Действует для режима</label>
 
                     <div class="mode-tabs">
@@ -403,95 +412,101 @@ body {
                         <div
                             class="mode-tab active"
                             data-mode="all"
-                            onclick="selectMode(this)"
-                        >
+                            onclick="selectMode(this)">
                             ВСЕ
                         </div>
 
                         <div
                             class="mode-tab"
                             data-mode="messages"
-                            onclick="selectMode(this)"
-                        >
+                            onclick="selectMode(this)">
                             💬
                         </div>
 
                         <div
                             class="mode-tab"
                             data-mode="ducks"
-                            onclick="selectMode(this)"
-                        >
+                            onclick="selectMode(this)">
                             🦆
                         </div>
 
                         <div
                             class="mode-tab"
                             data-mode="wheel"
-                            onclick="selectMode(this)"
-                        >
+                            onclick="selectMode(this)">
                             🎡
                         </div>
 
                     </div>
+
                 </div>
 
                 <button
                     class="btn btn-primary"
-                    onclick="saveForceNick()"
-                >
+                    onclick="saveForceNick()">
                     💾 Установить форс-победителя
                 </button>
 
                 <button
                     class="btn btn-danger"
-                    onclick="clearForceNick()"
-                >
+                    onclick="clearForceNick()">
                     🗑️ Убрать форс
                 </button>
 
-                <div class="status empty" id="force-status">
+                <div
+                    class="status empty"
+                    id="force-status">
+
                     <span class="dot"></span>
+
                     <span id="force-status-text">
                         Форс не задан
                     </span>
+
                 </div>
 
             </div>
 
+
+            <!-- ИСТОРИЯ ПОБЕД -->
             <div class="section">
 
-                <div class="title">🏆 История побед</div>
+                <div class="title">
+                    🏆 История побед
+                </div>
 
                 <div class="desc">
                     Очистка истории побед и базы победителей
                     (используется для фильтра "NEW").
                 </div>
 
-                <div class="status empty" id="winners-status">
+                <div
+                    class="status empty"
+                    id="winners-status">
+
                     <span class="dot"></span>
+
                     <span id="winners-status-text">
                         Загрузка...
                     </span>
+
                 </div>
 
                 <button
                     class="btn btn-warn"
-                    onclick="clearWinnersLog()"
-                >
+                    onclick="clearWinnersLog()">
                     📜 Очистить историю побед
                 </button>
 
                 <button
                     class="btn btn-danger"
-                    onclick="clearWinnersBase()"
-                >
+                    onclick="clearWinnersBase()">
                     💥 Очистить базу победителей (NEW)
                 </button>
 
                 <button
                     class="btn btn-danger"
-                    onclick="clearAll()"
-                >
+                    onclick="clearAll()">
                     ☠️ Очистить ВСЁ (история + база)
                 </button>
 
@@ -501,19 +516,22 @@ body {
     </div>
 </div>
 
+
 <div class="toast" id="toast"></div>
+
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+
 <script>
-/* =========================
-   МУЗЫКА
-========================= */
+
+/* ==========================================
+   МУЗЫКА — С 16-Й СЕКУНДЫ
+========================================== */
 
 const bgMusic = document.getElementById('bgMusic');
 
-/* Громкость 50% */
 bgMusic.volume = 0.5;
 
 let musicStarted = false;
@@ -522,39 +540,90 @@ function startMusic() {
 
     if (musicStarted) return;
 
+    /*
+       ВАЖНО:
+       Перед запуском перематываем аудио
+       ровно на 16 секунд.
+    */
+    try {
+        bgMusic.currentTime = 16;
+    } catch (e) {
+        console.log('Не удалось установить позицию:', e);
+    }
+
     bgMusic.play()
         .then(() => {
+
             musicStarted = true;
+
+            console.log(
+                'Музыка запущена с 16-й секунды'
+            );
+
         })
-        .catch(() => {
-            // Автозапуск заблокирован браузером.
-            // Попробуем ещё раз после взаимодействия.
+        .catch((error) => {
+
+            console.log(
+                'Автозапуск заблокирован браузером:',
+                error
+            );
+
         });
 }
 
-/* Пытаемся включить музыку после F5 */
-window.addEventListener('load', () => {
-    startMusic();
-});
 
 /*
-   Если браузер запрещает autoplay,
-   музыка запустится после первого клика.
+   После F5 ждём загрузки метаданных аудио,
+   чтобы браузер знал длительность и
+   позволил установить currentTime.
 */
-document.addEventListener('click', startMusic, { once: true });
+window.addEventListener('load', function() {
+
+    if (bgMusic.readyState >= 1) {
+
+        startMusic();
+
+    } else {
+
+        bgMusic.addEventListener(
+            'loadedmetadata',
+            startMusic,
+            { once:true }
+        );
+
+    }
+
+});
+
+
+/*
+   Если браузер заблокировал autoplay,
+   запускаем музыку после первого клика.
+*/
+document.addEventListener(
+    'click',
+    startMusic,
+    { once:true }
+);
+
 
 /*
    Или после первого нажатия клавиши.
 */
-document.addEventListener('keydown', startMusic, { once: true });
+document.addEventListener(
+    'keydown',
+    startMusic,
+    { once:true }
+);
 
 
-/* =========================
+/* ==========================================
    FIREBASE
-========================= */
+========================================== */
 
 const firebaseConfig = {
-    databaseURL: "https://malibash-8e9ef-default-rtdb.firebaseio.com"
+    databaseURL:
+        "https://malibash-8e9ef-default-rtdb.firebaseio.com"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -564,15 +633,17 @@ const db = firebase.database();
 let currentMode = 'all';
 
 
-/* =========================
-   РЕЖИМЫ
-========================= */
+/* ==========================================
+   ВЫБОР РЕЖИМА
+========================================== */
 
 function selectMode(el) {
 
     document
         .querySelectorAll('.mode-tab')
-        .forEach(t => t.classList.remove('active'));
+        .forEach(t => {
+            t.classList.remove('active');
+        });
 
     el.classList.add('active');
 
@@ -580,9 +651,9 @@ function selectMode(el) {
 }
 
 
-/* =========================
+/* ==========================================
    TOAST
-========================= */
+========================================== */
 
 function showToast(text, danger = false) {
 
@@ -590,254 +661,171 @@ function showToast(text, danger = false) {
 
     t.textContent = text;
 
-    t.className = 'toast' + (danger ? ' danger' : '');
+    t.className =
+        'toast' +
+        (danger ? ' danger' : '');
 
     t.classList.add('show');
 
     clearTimeout(t._timer);
 
     t._timer = setTimeout(() => {
+
         t.classList.remove('show');
+
     }, 2500);
 }
 
 
-/* =========================
+/* ==========================================
    FORCE WINNER
-========================= */
+========================================== */
 
-db.ref('deminaleksey_panel/forceWinner').on('value', (snap) => {
+db.ref('deminaleksey_panel/forceWinner')
+    .on('value', (snap) => {
 
-    const data = snap.val();
+        const data = snap.val();
 
-    const statusEl =
-        document.getElementById('force-status');
+        const statusEl =
+            document.getElementById(
+                'force-status'
+            );
 
-    const textEl =
-        document.getElementById('force-status-text');
+        const textEl =
+            document.getElementById(
+                'force-status-text'
+            );
 
-    if (data && data.nick) {
+        if (data && data.nick) {
 
-        statusEl.className = 'status active';
+            statusEl.className =
+                'status active';
 
-        const modeLabel = {
-            all: 'все режимы',
-            messages: 'по сообщениям',
-            ducks: 'гонка',
-            wheel: 'колесо'
-        }[data.mode || 'all'];
+            const modeLabel = {
+
+                all: 'все режимы',
+
+                messages: 'по сообщениям',
+
+                ducks: 'гонка',
+
+                wheel: 'колесо'
+
+            }[data.mode || 'all'];
+
+            textEl.textContent =
+                `🎯 Форс: ${data.nick} (${modeLabel})`;
+
+            document.getElementById(
+                'force-nick'
+            ).value = data.nick;
+
+            document
+                .querySelectorAll('.mode-tab')
+                .forEach(t => {
+
+                    t.classList.toggle(
+                        'active',
+                        t.dataset.mode ===
+                        (data.mode || 'all')
+                    );
+
+                });
+
+            currentMode =
+                data.mode || 'all';
+
+        } else {
+
+            statusEl.className =
+                'status empty';
+
+            textEl.textContent =
+                'Форс не задан';
+
+        }
+
+    });
+
+
+/* ==========================================
+   WINNERS
+========================================== */
+
+db.ref('deminaleksey_panel')
+    .on('value', (snap) => {
+
+        const data =
+            snap.val() || {};
+
+        const base =
+            data.winnersBase || [];
+
+        const log =
+            data.winnersLog || [];
+
+        const el =
+            document.getElementById(
+                'winners-status'
+            );
+
+        const textEl =
+            document.getElementById(
+                'winners-status-text'
+            );
+
+        el.className =
+            'status active';
 
         textEl.textContent =
-            `🎯 Форс: ${data.nick} (${modeLabel})`;
+            `🏆 В базе: ${base.length} • История: ${log.length}`;
 
-        document.getElementById('force-nick').value =
-            data.nick;
-
-        document
-            .querySelectorAll('.mode-tab')
-            .forEach(t => {
-
-                t.classList.toggle(
-                    'active',
-                    t.dataset.mode === (data.mode || 'all')
-                );
-
-            });
-
-        currentMode = data.mode || 'all';
-
-    } else {
-
-        statusEl.className = 'status empty';
-
-        textEl.textContent = 'Форс не задан';
-    }
-});
+    });
 
 
-/* =========================
-   WINNERS
-========================= */
-
-db.ref('deminaleksey_panel').on('value', (snap) => {
-
-    const data = snap.val() || {};
-
-    const base = data.winnersBase || [];
-    const log = data.winnersLog || [];
-
-    const el =
-        document.getElementById('winners-status');
-
-    const textEl =
-        document.getElementById('winners-status-text');
-
-    el.className = 'status active';
-
-    textEl.textContent =
-        `🏆 В базе: ${base.length} • История: ${log.length}`;
-});
-
-
-/* =========================
+/* ==========================================
    СОХРАНИТЬ ФОРС
-========================= */
+========================================== */
 
 function saveForceNick() {
 
     const nick =
-        document.getElementById('force-nick').value.trim();
+        document
+            .getElementById('force-nick')
+            .value
+            .trim();
 
     if (!nick) {
 
-        showToast('⚠️ Введи ник', true);
+        showToast(
+            '⚠️ Введи ник',
+            true
+        );
 
         return;
     }
 
-    db.ref('deminaleksey_panel/forceWinner')
-        .set({
+    db.ref(
+        'deminaleksey_panel/forceWinner'
+    )
+    .set({
 
-            nick: nick,
+        nick: nick,
 
-            mode: currentMode,
+        mode: currentMode,
 
-            setAt: new Date().toLocaleString('ru-RU')
+        setAt:
+            new Date()
+                .toLocaleString('ru-RU')
 
-        })
-        .then(() => {
-
-            showToast(`✅ Форс установлен: ${nick}`);
-
-        })
-        .catch(e => {
-
-            showToast(
-                '❌ Ошибка: ' + e.message,
-                true
-            );
-
-        });
-}
-
-
-/* =========================
-   УБРАТЬ ФОРС
-========================= */
-
-function clearForceNick() {
-
-    db.ref('deminaleksey_panel/forceWinner')
-        .remove()
-
-        .then(() => {
-
-            showToast('🗑️ Форс убран');
-
-        })
-
-        .catch(e => {
-
-            showToast(
-                '❌ Ошибка: ' + e.message,
-                true
-            );
-
-        });
-}
-
-
-/* =========================
-   ОЧИСТИТЬ ИСТОРИЮ
-========================= */
-
-function clearWinnersLog() {
-
-    if (!confirm(
-        'Очистить историю побед? (База для NEW останется)'
-    )) return;
-
-    db.ref('deminaleksey_panel/winnersLog')
-        .set([])
-
-        .then(() => {
-
-            showToast('📜 История побед очищена');
-
-        })
-
-        .catch(e => {
-
-            showToast(
-                '❌ Ошибка: ' + e.message,
-                true
-            );
-
-        });
-}
-
-
-/* =========================
-   ОЧИСТИТЬ БАЗУ
-========================= */
-
-function clearWinnersBase() {
-
-    if (!confirm(
-        'Очистить базу победителей? После этого все смогут участвовать в NEW-режиме заново.'
-    )) return;
-
-    db.ref('deminaleksey_panel/winnersBase')
-        .set([])
-
-        .then(() => {
-
-            showToast(
-                '💥 База победителей очищена'
-            );
-
-        })
-
-        .catch(e => {
-
-            showToast(
-                '❌ Ошибка: ' + e.message,
-                true
-            );
-
-        });
-}
-
-
-/* =========================
-   ОЧИСТИТЬ ВСЁ
-========================= */
-
-function clearAll() {
-
-    if (!confirm(
-        'ОЧИСТИТЬ ВСЁ: история побед + база победителей? Это нельзя отменить.'
-    )) return;
-
-    Promise.all([
-
-        db.ref('deminaleksey_panel/winnersLog')
-            .set([]),
-
-        db.ref('deminaleksey_panel/winnersBase')
-            .set([])
-
-    ])
-
+    })
     .then(() => {
 
         showToast(
-            '☠️ Всё очищено',
-            true
+            `✅ Форс установлен: ${nick}`
         );
 
     })
-
     .catch(e => {
 
         showToast(
@@ -847,6 +835,142 @@ function clearAll() {
 
     });
 }
+
+
+/* ==========================================
+   УБРАТЬ ФОРС
+========================================== */
+
+function clearForceNick() {
+
+    db.ref(
+        'deminaleksey_panel/forceWinner'
+    )
+    .remove()
+
+    .then(() => {
+
+        showToast(
+            '🗑️ Форс убран'
+        );
+
+    })
+    .catch(e => {
+
+        showToast(
+            '❌ Ошибка: ' + e.message,
+            true
+        );
+
+    });
+}
+
+
+/* ==========================================
+   ОЧИСТИТЬ ИСТОРИЮ
+========================================== */
+
+function clearWinnersLog() {
+
+    if (!confirm(
+        'Очистить историю побед? (База для NEW останется)'
+    )) return;
+
+    db.ref(
+        'deminaleksey_panel/winnersLog'
+    )
+    .set([])
+
+    .then(() => {
+
+        showToast(
+            '📜 История побед очищена'
+        );
+
+    })
+    .catch(e => {
+
+        showToast(
+            '❌ Ошибка: ' + e.message,
+            true
+        );
+
+    });
+}
+
+
+/* ==========================================
+   ОЧИСТИТЬ БАЗУ
+========================================== */
+
+function clearWinnersBase() {
+
+    if (!confirm(
+        'Очистить базу победителей? После этого все смогут участвовать в NEW-режиме заново.'
+    )) return;
+
+    db.ref(
+        'deminaleksey_panel/winnersBase'
+    )
+    .set([])
+
+    .then(() => {
+
+        showToast(
+            '💥 База победителей очищена'
+        );
+
+    })
+    .catch(e => {
+
+        showToast(
+            '❌ Ошибка: ' + e.message,
+            true
+        );
+
+    });
+}
+
+
+/* ==========================================
+   ОЧИСТИТЬ ВСЁ
+========================================== */
+
+function clearAll() {
+
+    if (!confirm(
+        'ОЧИСТИТЬ ВСЁ: история побед + база победителей? Это нельзя отменить.'
+    )) return;
+
+    Promise.all([
+
+        db.ref(
+            'deminaleksey_panel/winnersLog'
+        ).set([]),
+
+        db.ref(
+            'deminaleksey_panel/winnersBase'
+        ).set([])
+
+    ])
+    .then(() => {
+
+        showToast(
+            '☠️ Всё очищено',
+            true
+        );
+
+    })
+    .catch(e => {
+
+        showToast(
+            '❌ Ошибка: ' + e.message,
+            true
+        );
+
+    });
+}
+
 </script>
 
 </body>
