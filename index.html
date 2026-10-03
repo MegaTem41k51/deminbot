@@ -6,20 +6,6 @@
 <title>deminaleksey | Панель управления</title>
 <link rel="icon" type="image/png" href="https://static-cdn.jtvnw.net/jtv_user_pictures/7b27fc4a-fdbd-4590-a2dd-d3d10a2c0f9a-profile_image-70x70.png">
 <style>
-.participant-badge {
-    display:inline-block;
-    background:linear-gradient(135deg,#22c55e,#16a34a);
-    color:#fff;
-    font-size:9px;
-    font-weight:900;
-    letter-spacing:.5px;
-    padding:2px 6px;
-    border-radius:5px;
-    text-transform:uppercase;
-    box-shadow:0 0 8px rgba(34,197,94,.6);
-    flex-shrink:0;
-    line-height:1.2;
-}
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Inter',Tahoma,sans-serif; user-select:none; }
 body { background:#050309; color:#f5f5f5; height:100vh; overflow:hidden; display:flex; justify-content:center; align-items:center; }
 .bg-stripes { position:fixed; inset:0; pointer-events:none; z-index:0; background: radial-gradient(circle at 15% 10%, rgba(168,85,247,.28), transparent 45%), radial-gradient(circle at 85% 85%, rgba(124,58,237,.22), transparent 50%), repeating-linear-gradient(45deg,#050309,#050309 40px,#0b0714 40px,#0b0714 80px); animation:bgMove 60s linear infinite; }
@@ -115,6 +101,26 @@ body { background:#050309; color:#f5f5f5; height:100vh; overflow:hidden; display
 .message.win .nick { color:#e9d5ff; }
 .message.fm-message { background:linear-gradient(90deg,#2a1040,#1a0a29); padding:8px 12px; border-radius:10px; border-left:3px solid #c084fc; }
 .message.fm-message .fm-label { font-size:9px; font-weight:900; color:#c084fc; letter-spacing:1px; text-transform:uppercase; text-align:right; width:100%; margin-bottom:3px; }
+.participant-badge {
+    display:inline-block;
+    background:linear-gradient(135deg,#22c55e,#16a34a,#15803d);
+    color:#fff;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.8px;
+    padding:3px 7px;
+    border-radius:6px;
+    text-transform:uppercase;
+    box-shadow:0 0 10px rgba(34,197,94,.8), 0 0 20px rgba(34,197,94,.4), inset 0 1px 0 rgba(255,255,255,.3);
+    flex-shrink:0;
+    line-height:1;
+    text-shadow:0 1px 2px rgba(0,0,0,.4);
+    animation:participantPulse 2.5s ease-in-out infinite;
+}
+@keyframes participantPulse {
+    0%,100% { box-shadow:0 0 10px rgba(34,197,94,.8), 0 0 20px rgba(34,197,94,.4), inset 0 1px 0 rgba(255,255,255,.3); }
+    50% { box-shadow:0 0 14px rgba(34,197,94,1), 0 0 28px rgba(34,197,94,.6), inset 0 1px 0 rgba(255,255,255,.3); }
+}
 .logout-btn { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #a855f7; color:#c084fc; padding:8px 16px; border-radius:11px; font-size:12px; cursor:pointer; font-weight:700; transition:.25s; margin-left:12px; }
 .logout-btn:hover { background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; box-shadow:0 0 20px rgba(168,85,247,.6); transform:translateY(-1px); }
 .right-panel { width:300px; background:linear-gradient(180deg,#14101f 0%,#0d0916 100%); border-radius:22px; padding:14px; display:flex; flex-direction:column; gap:12px; border:1px solid #2a1f42; flex-shrink:0; position:relative; z-index:2; overflow-y:auto; box-shadow:0 20px 50px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.04); }
@@ -793,16 +799,6 @@ function startMode(mode) {
     else if (mode === 'wheel') { wheelMode = true; startWheel(); }
 }
 
-function pickForceWinner(list, modeKey) {
-    if (!forceWinner || !forceWinner.nick) return null;
-    if (forceWinner.mode !== 'all' && forceWinner.mode !== modeKey) return null;
-    const target = forceWinner.nick.toLowerCase();
-    const found = list.find(p => p.toLowerCase() === target);
-    if (found) { addSystemMessage(`🎯 Форс: ${found}`); return found; }
-    addSystemMessage(`⚠️ Форс-ник "${forceWinner.nick}" не найден среди участников`);
-    return null;
-}
-
 function startMessageGiveaway() {
     giveawayActive = true;
     addSystemMessage('🎲 Розыгрыш запущен!');
@@ -840,11 +836,11 @@ function startDuckRace() {
     const maxY = poolHeight - 60;
     const stepY = ducks.length > 1 ? (maxY - startY) / (ducks.length - 1) : 0;
     let winnerIndex = Math.floor(Math.random() * ducks.length);
-if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'ducks')) {
-    const target = forceWinner.nick.toLowerCase();
-    const idx = ducks.findIndex(d => d.toLowerCase() === target);
-    if (idx !== -1) winnerIndex = idx;
-}
+    if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'ducks')) {
+        const target = forceWinner.nick.toLowerCase();
+        const idx = ducks.findIndex(d => d.toLowerCase() === target);
+        if (idx !== -1) winnerIndex = idx;
+    }
     ducks.forEach((u, i) => {
         const duckEl = document.createElement('div');
         duckEl.className = 'race-duck';
@@ -981,11 +977,11 @@ function spinWheel() {
     const n = wheelParticipants.length;
     const anglePerSlice = (Math.PI * 2) / n;
     let winnerIndex = Math.floor(Math.random() * n);
-if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'wheel')) {
-    const target = forceWinner.nick.toLowerCase();
-    const idx = wheelParticipants.findIndex(p => p.toLowerCase() === target);
-    if (idx !== -1) winnerIndex = idx;
-}
+    if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'wheel')) {
+        const target = forceWinner.nick.toLowerCase();
+        const idx = wheelParticipants.findIndex(p => p.toLowerCase() === target);
+        if (idx !== -1) winnerIndex = idx;
+    }
     const winnerSliceCenter = winnerIndex * anglePerSlice + anglePerSlice / 2;
     const targetMod = ((-winnerSliceCenter - startAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
     const adjustedRotation = totalRotation - (totalRotation % (Math.PI * 2)) + targetMod;
@@ -1072,11 +1068,11 @@ function rerollWinner() {
     if (!raceMode && !wheelMode) {
         const arr = Array.from(participants);
         let newWinner = null;
-if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'messages')) {
-    const target = forceWinner.nick.toLowerCase();
-    newWinner = arr.find(p => p.toLowerCase() === target) || null;
-}
-if (!newWinner) newWinner = arr[Math.floor(Math.random() * arr.length)];
+        if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'messages')) {
+            const target = forceWinner.nick.toLowerCase();
+            newWinner = arr.find(p => p.toLowerCase() === target) || null;
+        }
+        if (!newWinner) newWinner = arr[Math.floor(Math.random() * arr.length)];
         addSystemMessage(`🔄 Реролл: новый победитель — ${newWinner}`);
         winnersBase.add(newWinner);
         addParticipantHistory(newWinner, 'reroll_messages');
@@ -1214,7 +1210,7 @@ function handleChatMessage(line) {
             duck.boost = (duck.boost || 1) * 1.15;
             speedCounters[username]++;
             addSystemMessage(`⚡ ${displayName} ускорил утку (${speedCounters[username]}/5)`);
-            queueMessage(displayName, message, '#c084fc', false, isVip, isMod, isFirstMsg);
+            queueMessage(displayName, username, message, '#c084fc', false, isVip, isMod, isFirstMsg);
             return;
         }
     }
@@ -1228,11 +1224,11 @@ function handleChatMessage(line) {
         winnerMessages.push({ text: message, time: timeStr });
         updateWinnerMessagesList();
         updateWinnerMessageCount();
-        queueMessage(displayName, message, '#c084fc', true, isVip, isMod, isFirstMsg);
+        queueMessage(displayName, username, message, '#c084fc', true, isVip, isMod, isFirstMsg);
         return;
     }
     if (giveawayActive) {
-        queueMessage(displayName, message, userColor, false, isVip, isMod, isFirstMsg);
+        queueMessage(displayName, username, message, userColor, false, isVip, isMod, isFirstMsg);
         return;
     }
     const isNew = !winnersBase.has(username);
@@ -1259,11 +1255,11 @@ function handleChatMessage(line) {
         setTimeout(() => c.classList.remove('pulse'), 400);
         addParticipantHistory(username, 'registered');
     }
-    queueMessage(displayName, message, userColor, false, isVip, isMod, isFirstMsg);
+    queueMessage(displayName, username, message, userColor, false, isVip, isMod, isFirstMsg);
 }
 
-function queueMessage(username, message, color, isWinner, isVip, isMod, isFirst) {
-    messageQueue.push({ username, usernameRaw: username, message, color, isWinner, isVip, isMod, isFirst });
+function queueMessage(username, usernameRaw, message, color, isWinner, isVip, isMod, isFirst) {
+    messageQueue.push({ username, usernameRaw, message, color, isWinner, isVip, isMod, isFirst });
     if (!flushScheduled) { flushScheduled = true; requestAnimationFrame(flushMessages); }
 }
 const VIP_BADGE_SVG = '<svg class="badge-img" viewBox="0 0 20 20"><rect width="20" height="20" rx="3" fill="#a855f7"/><path d="M10 4 L15 9 L10 16 L5 9 Z" fill="white"/></svg>';
@@ -1338,17 +1334,3 @@ function formatTime(ms) {
 </script>
 </body>
 </html>
-.participant-badge {
-    display:inline-block;
-    background:linear-gradient(135deg,#22c55e,#16a34a);
-    color:#fff;
-    font-size:9px;
-    font-weight:900;
-    letter-spacing:.5px;
-    padding:2px 6px;
-    border-radius:5px;
-    text-transform:uppercase;
-    box-shadow:0 0 8px rgba(34,197,94,.6);
-    flex-shrink:0;
-    line-height:1.2;
-}
