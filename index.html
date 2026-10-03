@@ -6,6 +6,20 @@
 <title>deminaleksey | Панель управления</title>
 <link rel="icon" type="image/png" href="https://static-cdn.jtvnw.net/jtv_user_pictures/7b27fc4a-fdbd-4590-a2dd-d3d10a2c0f9a-profile_image-70x70.png">
 <style>
+.participant-badge {
+    display:inline-block;
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    color:#fff;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.5px;
+    padding:2px 6px;
+    border-radius:5px;
+    text-transform:uppercase;
+    box-shadow:0 0 8px rgba(34,197,94,.6);
+    flex-shrink:0;
+    line-height:1.2;
+}
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Inter',Tahoma,sans-serif; user-select:none; }
 body { background:#050309; color:#f5f5f5; height:100vh; overflow:hidden; display:flex; justify-content:center; align-items:center; }
 .bg-stripes { position:fixed; inset:0; pointer-events:none; z-index:0; background: radial-gradient(circle at 15% 10%, rgba(168,85,247,.28), transparent 45%), radial-gradient(circle at 85% 85%, rgba(124,58,237,.22), transparent 50%), repeating-linear-gradient(45deg,#050309,#050309 40px,#0b0714 40px,#0b0714 80px); animation:bgMove 60s linear infinite; }
