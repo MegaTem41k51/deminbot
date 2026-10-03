@@ -793,7 +793,11 @@ function startMessageGiveaway() {
     giveawayActive = true;
     addSystemMessage('🎲 Розыгрыш запущен!');
     const arr = Array.from(participants);
-    let winner = pickForceWinner(arr, 'messages');
+    let winner = null;
+    if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'messages')) {
+        const target = forceWinner.nick.toLowerCase();
+        winner = arr.find(p => p.toLowerCase() === target) || null;
+    }
     if (!winner) winner = arr[Math.floor(Math.random() * arr.length)];
     addSystemMessage(`🏆 ПОБЕДИТЕЛЬ: ${winner}`);
     winnersBase.add(winner);
@@ -822,12 +826,11 @@ function startDuckRace() {
     const maxY = poolHeight - 60;
     const stepY = ducks.length > 1 ? (maxY - startY) / (ducks.length - 1) : 0;
     let winnerIndex = Math.floor(Math.random() * ducks.length);
-    if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'ducks')) {
-        const target = forceWinner.nick.toLowerCase();
-        const idx = ducks.findIndex(d => d.toLowerCase() === target);
-        if (idx !== -1) { winnerIndex = idx; addSystemMessage(`🎯 Форс в гонке: ${ducks[idx]}`); }
-        else addSystemMessage(`⚠️ Форс-ник "${forceWinner.nick}" не найден`);
-    }
+if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'ducks')) {
+    const target = forceWinner.nick.toLowerCase();
+    const idx = ducks.findIndex(d => d.toLowerCase() === target);
+    if (idx !== -1) winnerIndex = idx;
+}
     ducks.forEach((u, i) => {
         const duckEl = document.createElement('div');
         duckEl.className = 'race-duck';
@@ -964,12 +967,11 @@ function spinWheel() {
     const n = wheelParticipants.length;
     const anglePerSlice = (Math.PI * 2) / n;
     let winnerIndex = Math.floor(Math.random() * n);
-    if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'wheel')) {
-        const target = forceWinner.nick.toLowerCase();
-        const idx = wheelParticipants.findIndex(p => p.toLowerCase() === target);
-        if (idx !== -1) { winnerIndex = idx; addSystemMessage(`🎯 Форс на колесе: ${wheelParticipants[idx]}`); }
-        else addSystemMessage(`⚠️ Форс-ник "${forceWinner.nick}" не найден`);
-    }
+if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'wheel')) {
+    const target = forceWinner.nick.toLowerCase();
+    const idx = wheelParticipants.findIndex(p => p.toLowerCase() === target);
+    if (idx !== -1) winnerIndex = idx;
+}
     const winnerSliceCenter = winnerIndex * anglePerSlice + anglePerSlice / 2;
     const targetMod = ((-winnerSliceCenter - startAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
     const adjustedRotation = totalRotation - (totalRotation % (Math.PI * 2)) + targetMod;
@@ -1055,8 +1057,12 @@ function rerollWinner() {
     if (participants.size === 0) { addSystemMessage('⚠️ Больше нет участников для реролла.'); return; }
     if (!raceMode && !wheelMode) {
         const arr = Array.from(participants);
-        let newWinner = pickForceWinner(arr, 'messages');
-        if (!newWinner) newWinner = arr[Math.floor(Math.random() * arr.length)];
+        let newWinner = null;
+if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'messages')) {
+    const target = forceWinner.nick.toLowerCase();
+    newWinner = arr.find(p => p.toLowerCase() === target) || null;
+}
+if (!newWinner) newWinner = arr[Math.floor(Math.random() * arr.length)];
         addSystemMessage(`🔄 Реролл: новый победитель — ${newWinner}`);
         winnersBase.add(newWinner);
         addParticipantHistory(newWinner, 'reroll_messages');
