@@ -3,72 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РАЗРАБОТЧИК СПИТ</title>
+    <title>РАЗРАБОТЧИК ПОШЕЛ СПАТЬ</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: #270e0d;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
+            background: #000;
+            font-family: 'Impact', 'Arial Black', sans-serif;
             overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Психоделический рубленный фон */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: -50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff0000, #ff8000, #ffff00, #80ff00,
+                #00ff00, #00ff80, #00ffff, #0080ff,
+                #0000ff, #8000ff, #ff00ff, #ff0080,
+                #ff0000
+            );
+            animation: rotateBg 4s linear infinite;
+            filter: blur(80px);
+            opacity: 0.7;
+            z-index: 0;
+        }
+
+        @keyframes rotateBg {
+            to { transform: rotate(360deg); }
+        }
+
+        .window {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 900px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 6px solid #fff;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow:
+                0 0 40px #ff00ff,
+                0 0 80px #00ffff,
+                inset 0 0 60px rgba(255, 0, 255, 0.3);
+            animation: windowPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes windowPulse {
+            from {
+                box-shadow:
+                    0 0 40px #ff00ff,
+                    0 0 80px #00ffff,
+                    inset 0 0 60px rgba(255, 0, 255, 0.3);
+            }
+            to {
+                box-shadow:
+                    0 0 60px #00ffff,
+                    0 0 120px #ff00ff,
+                    inset 0 0 80px rgba(0, 255, 255, 0.4);
+            }
         }
 
         h1 {
-            font-size: 4rem;
-            margin: 0;
+            font-size: clamp(1.5rem, 5vw, 3.5rem);
+            line-height: 1.1;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            color: #3cfe57;
-            text-shadow: 0 0 20px rgba(255, 59, 59, 0.6);
-            animation: blink 1.5s infinite;
+            letter-spacing: 3px;
+            background: linear-gradient(
+                90deg,
+                #ff0000, #ff8000, #ffff00, #00ff00,
+                #00ffff, #0080ff, #8000ff, #ff00ff, #ff0000
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbowText 2s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+            margin-bottom: 20px;
         }
 
-        h2 {
-            font-size: 2rem;
-            margin-top: 30px;
-            color: #ffffff;
-            font-weight: 400;
+        @keyframes rainbowText {
+            to { background-position: 200% center; }
         }
 
         .name {
             display: block;
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #8714eb;
-            margin-top: 10px;
-            letter-spacing: 2px;
+            font-size: clamp(2rem, 8vw, 5rem);
+            font-weight: 900;
+            letter-spacing: 6px;
+            margin: 25px 0;
+            color: #fff;
+            text-shadow:
+                0 0 10px #ff00ff,
+                0 0 20px #ff00ff,
+                0 0 40px #ff00ff,
+                0 0 80px #00ffff,
+                0 0 120px #00ffff;
+            animation: nameGlitch 0.3s infinite;
+        }
+
+        @keyframes nameGlitch {
+            0%, 100% {
+                transform: translate(0, 0) skew(0deg);
+                text-shadow:
+                    0 0 10px #ff00ff,
+                    0 0 20px #ff00ff,
+                    0 0 40px #ff00ff,
+                    0 0 80px #00ffff;
+            }
+            25% {
+                transform: translate(-3px, 2px) skew(2deg);
+                text-shadow:
+                    3px 0 0 #00ffff,
+                    -3px 0 0 #ff00ff,
+                    0 0 30px #ffff00;
+            }
+            50% {
+                transform: translate(3px, -2px) skew(-2deg);
+                text-shadow:
+                    -3px 0 0 #ff0000,
+                    3px 0 0 #00ff00,
+                    0 0 40px #ffffff;
+            }
+            75% {
+                transform: translate(-2px, -3px) skew(1deg);
+                text-shadow:
+                    2px 0 0 #ffff00,
+                    -2px 0 0 #00ffff,
+                    0 0 30px #ff00ff;
+            }
+        }
+
+        h2 {
+            font-size: clamp(1.2rem, 4vw, 2.2rem);
             text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+            letter-spacing: 4px;
+            color: #00ff00;
+            text-shadow:
+                0 0 15px #00ff00,
+                0 0 30px #00ff00,
+                0 0 45px #00ffff;
+            margin-top: 10px;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* Адаптив для телефонов */
-        @media (max-width: 600px) {
-            h1 { font-size: 2.2rem; }
-            h2 { font-size: 1.2rem; }
-            .name { font-size: 1.5rem; }
+        .time {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.9rem, 2vw, 1.3rem);
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 25px;
+            border: 2px solid #00ffff;
+            border-radius: 50px;
+            text-shadow: 0 0 15px #00ffff;
+            box-shadow:
+                0 0 20px #00ffff,
+                inset 0 0 15px rgba(0, 255, 255, 0.3);
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
 
-    <h1>РАЗРАБОТЧИК<br>ПОШЕЛ СПАТЬ</h1>
+    <div class="window">
+        <h1>РАЗРАБОТЧИК<br>ПОШЕЛ СПАТЬ</h1>
 
-    <h2>
         <span class="name">DEMINALEKSEY</span>
-        ИДИ СПАТЬ И СРАТЬ 
-    </h2>
+
+        <h2>ИДИ СПАТЬ И СРАТЬ</h2>
+    </div>
+
+    <div class="time" id="clock">МСК ВРЕМЯ</div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+
+            // Получаем московское время (UTC+3)
+            const msk = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (3 * 3600000));
+
+            const hh = String(msk.getHours()).padStart(2, '0');
+            const mm = String(msk.getMinutes()).padStart(2, '0');
+            const ss = String(msk.getSeconds()).padStart(2, '0');
+
+            document.getElementById('clock').textContent =
+                `МСК ВРЕМЯ: ${hh}:${mm}:${ss}`;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
 
 </body>
 </html>
