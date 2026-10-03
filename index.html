@@ -3,109 +3,512 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>deminaleksey | Админка</title>
+<title>deminaleksey | Панель управления</title>
 <link rel="icon" type="image/png" href="https://static-cdn.jtvnw.net/jtv_user_pictures/7b27fc4a-fdbd-4590-a2dd-d3d10a2c0f9a-profile_image-70x70.png">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Inter',Tahoma,sans-serif; user-select:none; }
-body { background:#050309; color:#f5f5f5; min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; background-image: radial-gradient(circle at 15% 10%, rgba(168,85,247,.28), transparent 45%), radial-gradient(circle at 85% 85%, rgba(124,58,237,.22), transparent 50%), repeating-linear-gradient(45deg,#050309,#050309 40px,#0b0714 40px,#0b0714 80px); }
-.admin-wrap { width:100%; max-width:560px; }
-.admin-card { background:linear-gradient(180deg,#14101f 0%,#0d0916 100%); border-radius:24px; overflow:hidden; border:1px solid #a855f7; box-shadow:0 0 80px rgba(124,58,237,.5), 0 30px 60px rgba(0,0,0,.8); animation:popIn .4s cubic-bezier(.2,1.4,.5,1); position:relative; }
+body { background:#050309; color:#f5f5f5; height:100vh; overflow:hidden; display:flex; justify-content:center; align-items:center; }
+.bg-stripes { position:fixed; inset:0; pointer-events:none; z-index:0; background: radial-gradient(circle at 15% 10%, rgba(168,85,247,.28), transparent 45%), radial-gradient(circle at 85% 85%, rgba(124,58,237,.22), transparent 50%), repeating-linear-gradient(45deg,#050309,#050309 40px,#0b0714 40px,#0b0714 80px); animation:bgMove 60s linear infinite; }
+@keyframes bgMove { from { background-position:0 0,0 0,0 0; } to { background-position:0 0,0 0,226px 226px; } }
+.spark { position:fixed; pointer-events:none; z-index:50; color:#c084fc; font-size:14px; opacity:0; animation:sparkFloat linear infinite; text-shadow:0 0 10px rgba(168,85,247,.9), 0 0 20px rgba(168,85,247,.4); font-weight:700; }
+@keyframes sparkFloat { 0% { transform:translateY(0) scale(.4) rotate(0deg); opacity:0; } 10% { opacity:1; } 90% { opacity:1; } 100% { transform:translateY(-110vh) scale(1.3) rotate(360deg); opacity:0; } }
+#login-screen { display:flex; justify-content:center; align-items:center; width:100%; height:100%; position:absolute; inset:0; z-index:100; background:#050309; }
+.login-container { background:linear-gradient(145deg,#120e1c,#0d0916); width:380px; padding:44px; border-radius:24px; border:1px solid #2a1f42; box-shadow:0 24px 60px rgba(0,0,0,.9), 0 0 60px rgba(168,85,247,.25), inset 0 1px 0 rgba(255,255,255,.05); text-align:center; animation:loginPop .6s cubic-bezier(.2,1.4,.5,1); position:relative; }
+.login-container::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:60%; height:2px; background:linear-gradient(90deg,transparent,#a855f7,transparent); border-radius:2px; }
+@keyframes loginPop { from { transform:scale(.85) translateY(20px); opacity:0; } to { transform:scale(1) translateY(0); opacity:1; } }
+.login-container h1 { font-size:22px; font-weight:800; margin-bottom:28px; color:#c084fc; letter-spacing:1px; text-shadow:0 0 20px rgba(168,85,247,.6); }
+.input-group { text-align:left; margin-bottom:22px; }
+.input-group label { display:block; font-size:13px; color:#aaa; margin-bottom:8px; }
+.input-group input { width:100%; padding:13px 16px; background:#050309; border:1px solid #2a1f42; border-radius:12px; color:#f5f5f5; font-size:14px; outline:none; transition:.25s; }
+.input-group input:focus { border-color:#a855f7; box-shadow:0 0 0 4px rgba(168,85,247,.18), 0 0 20px rgba(168,85,247,.3); }
+.btn-login { width:100%; padding:15px; background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; border:none; border-radius:14px; font-size:15px; font-weight:800; cursor:pointer; transition:.25s; letter-spacing:.5px; box-shadow:0 8px 24px rgba(124,58,237,.45); }
+.btn-login:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(168,85,247,.65); }
+.error-msg { color:#ff4d6d; font-size:13px; margin-top:12px; display:none; }
+#main-screen { display:none; width:100%; height:100%; padding:12px; gap:12px; background:transparent; position:relative; z-index:2; }
+.sidebar { width:360px; background:linear-gradient(180deg,#14101f 0%,#0d0916 100%); border-radius:22px; display:flex; flex-direction:column; overflow:hidden; border:1px solid #2a1f42; flex-shrink:0; position:relative; z-index:2; box-shadow:0 20px 50px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.04); }
+.sidebar-top-title { text-align:center; font-size:28px; font-weight:900; letter-spacing:5px; padding:24px 0 18px; text-transform:uppercase; background:linear-gradient(135deg,#e9d5ff 0%,#c084fc 40%,#a855f7 70%,#7c3aed 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 20px rgba(168,85,247,.7)); }
+.sidebar-header-bar { display:flex; align-items:center; justify-content:space-between; padding:0 18px 16px; gap:8px; }
+.sidebar-header-left { display:flex; align-items:center; gap:6px; font-size:13px; color:#b8b0c9; flex:1; font-weight:500; }
+.sidebar-header-center { font-size:13px; color:#fff; border-bottom:1px solid #a855f7; padding-bottom:2px; cursor:pointer; white-space:nowrap; font-weight:600; transition:.2s; }
+.sidebar-header-center:hover { color:#c084fc; text-shadow:0 0 12px rgba(192,132,252,.8); }
+.sidebar-settings-btn { background:linear-gradient(135deg,#a855f7,#7c3aed); border:none; color:#fff; width:36px; height:36px; border-radius:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; transition:.35s; box-shadow:0 0 18px rgba(168,85,247,.55), inset 0 1px 0 rgba(255,255,255,.2); }
+.sidebar-settings-btn:hover { transform:rotate(90deg) scale(1.08); box-shadow:0 0 28px rgba(168,85,247,.9); }
+.sidebar-content { padding:14px; display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex:1; }
+.sidebar-content::-webkit-scrollbar { width:6px; }
+.sidebar-content::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#a855f7,#7c3aed); border-radius:3px; }
+.field-label { font-size:12px; color:#a99fbb; margin-bottom:5px; font-weight:600; letter-spacing:.3px; }
+.channel-block { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:14px; padding:11px 13px; display:flex; align-items:center; gap:11px; box-shadow:inset 0 1px 0 rgba(255,255,255,.04); }
+.channel-avatar { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,#a855f7,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; overflow:hidden; color:#fff; font-weight:800; box-shadow:0 0 16px rgba(168,85,247,.6); position:relative; }
+.channel-avatar::after { content:''; position:absolute; inset:-2px; border-radius:50%; background:conic-gradient(from 0deg,#a855f7,#c084fc,#7c3aed,#a855f7); z-index:-1; animation:spinBorder 4s linear infinite; opacity:.7; }
+@keyframes spinBorder { to { transform:rotate(360deg); } }
+.channel-avatar img { width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; }
+.channel-info .name { font-size:13px; font-weight:700; color:#fff; }
+.channel-info .sub { font-size:11px; color:#7a6f8c; }
+.input-field { width:100%; padding:11px 13px; background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:12px; color:#f5f5f5; font-size:13px; outline:none; transition:.25s; }
+.input-field:focus { border-color:#a855f7; box-shadow:0 0 0 4px rgba(168,85,247,.15), 0 0 18px rgba(168,85,247,.35); }
+.small-input { width:80px; padding:10px 12px; background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:12px; color:#f5f5f5; font-size:13px; outline:none; text-align:center; transition:.25s; }
+.small-input:focus { border-color:#a855f7; box-shadow:0 0 0 4px rgba(168,85,247,.15); }
+.checkbox-item { display:flex; align-items:flex-start; gap:11px; font-size:13px; cursor:pointer; line-height:1.4; padding:10px 12px; border-radius:12px; transition:.25s; border:1px solid transparent; }
+.checkbox-item:hover { background:linear-gradient(145deg,#1a1428,#120e1c); border-color:#2a1f42; transform:translateX(3px); }
+.checkbox-item input { accent-color:#a855f7; width:17px; height:17px; margin-top:2px; flex-shrink:0; cursor:pointer; }
+.checkbox-item .main-text { color:#f5f5f5; font-weight:500; }
+.checkbox-item .sub-text { color:#7a6f8c; font-size:11px; display:block; margin-top:3px; }
+.action-btn { width:100%; padding:15px; border:none; border-radius:14px; font-size:14px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:.25s; color:#fff; letter-spacing:.4px; position:relative; overflow:hidden; }
+.action-btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent); transition:.6s; }
+.action-btn:hover::before { left:100%; }
+.btn-purple { background:linear-gradient(135deg,#a855f7,#7c3aed); box-shadow:0 8px 22px rgba(124,58,237,.4); }
+.btn-purple:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(168,85,247,.6); }
+.btn-pink { background:linear-gradient(135deg,#c084fc,#9333ea); box-shadow:0 8px 22px rgba(147,51,234,.4); }
+.btn-pink:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(192,132,252,.6); }
+.stat-box { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:16px; padding:16px; text-align:center; display:flex; flex-direction:column; gap:4px; transition:.3s; position:relative; overflow:hidden; }
+.stat-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#a855f7,transparent); opacity:0; transition:.3s; }
+.stat-box:hover { border-color:#a855f7; transform:translateY(-2px); box-shadow:0 10px 30px rgba(168,85,247,.25); }
+.stat-box:hover::before { opacity:1; }
+.stat-box .stat-title { font-size:12px; color:#a99fbb; font-weight:600; }
+.stat-box .stat-number { font-size:28px; font-weight:900; background:linear-gradient(135deg,#e9d5ff,#c084fc,#a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.stat-box .stat-number.muted { background:linear-gradient(135deg,#666,#444); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.stat-box .stat-sub { font-size:11px; color:#7a6f8c; }
+@keyframes countPulse { 0% { transform:scale(1); } 50% { transform:scale(1.3); } 100% { transform:scale(1); } }
+.stat-box .stat-number.pulse { animation:countPulse .4s ease; }
+.winners-log { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:16px; padding:12px; display:flex; flex-direction:column; gap:6px; max-height:200px; overflow-y:auto; }
+.winners-log::-webkit-scrollbar { width:5px; }
+.winners-log::-webkit-scrollbar-thumb { background:#3a2b55; border-radius:3px; }
+.winners-log .log-title { font-size:12px; color:#c084fc; font-weight:800; margin-bottom:6px; letter-spacing:.4px; }
+.winners-log .log-entry { font-size:12px; color:#ccc; padding:9px 12px; background:linear-gradient(145deg,#0d0916,#0a0712); border-radius:10px; border-left:3px solid #a855f7; cursor:pointer; transition:.2s; display:flex; justify-content:space-between; align-items:center; box-shadow:inset 0 1px 0 rgba(255,255,255,.03); }
+.winners-log .log-entry:hover { background:linear-gradient(145deg,#1f1730,#160f24); color:#c084fc; transform:translateX(5px); box-shadow:0 0 16px rgba(168,85,247,.35), inset 0 1px 0 rgba(255,255,255,.05); }
+.winners-log .log-entry .entry-date { color:#7a6f8c; font-size:11px; }
+.winners-log .log-empty { font-size:12px; color:#7a6f8c; text-align:center; padding:10px; }
+.center-panel { flex:1; display:flex; flex-direction:column; gap:12px; min-width:0; position:relative; z-index:2; }
+.chat-header { background:linear-gradient(145deg,#14101f,#0d0916); padding:16px 20px; border-radius:20px; display:flex; justify-content:space-between; align-items:center; border:1px solid #2a1f42; box-shadow:0 12px 30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.04); }
+.chat-header .left { font-size:13px; color:#b8b0c9; }
+.chat-header .right { display:flex; align-items:center; gap:12px; font-size:13px; color:#b8b0c9; }
+.chat-header .right .online-dot { width:10px; height:10px; background:#555; border-radius:50%; display:inline-block; transition:background .3s, box-shadow .3s; }
+.chat-header .right .online-dot.live { background:#a855f7; box-shadow:0 0 12px #a855f7, 0 0 24px rgba(168,85,247,.5); animation:dotPulse 1.5s infinite; }
+@keyframes dotPulse { 0%,100% { box-shadow:0 0 10px #a855f7, 0 0 20px rgba(168,85,247,.4); } 50% { box-shadow:0 0 18px #a855f7, 0 0 32px #a855f7; } }
+.chat-header .right .count { color:#fff; font-weight:700; }
+.chat-messages { flex:1; background:linear-gradient(180deg,#0a0712,#08060d); border-radius:20px; padding:16px; overflow-y:auto; border:1px solid #2a1f42; display:flex; flex-direction:column; gap:3px; box-shadow:inset 0 2px 20px rgba(0,0,0,.6); }
+.chat-messages::-webkit-scrollbar { width:6px; }
+.chat-messages::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#a855f7,#7c3aed); border-radius:3px; }
+.message { font-size:13px; line-height:1.4; padding:5px 10px; border-radius:8px; display:flex; gap:6px; align-items:center; flex-wrap:wrap; animation:msgIn .25s ease; }
+@keyframes msgIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
+.message:hover { background:linear-gradient(90deg,#1a1329,transparent); }
+.message .badge-img { width:16px; height:16px; vertical-align:middle; flex-shrink:0; }
+.message .nick { font-weight:800; color:#c084fc; flex-shrink:0; }
+.message .text { color:#e8e4f0; word-break:break-word; }
+.message.system { color:#b8b0c9; font-style:italic; background:linear-gradient(90deg,rgba(168,85,247,.15),transparent); padding:8px 14px; border-radius:10px; font-size:12px; border-left:3px solid #a855f7; }
+.message.win { background:linear-gradient(90deg,rgba(168,85,247,.35),rgba(168,85,247,.1)); border:1px solid rgba(168,85,247,.5); box-shadow:0 0 20px rgba(168,85,247,.3); animation:winFlash 1.2s ease; }
+@keyframes winFlash { 0% { background:rgba(168,85,247,.7); box-shadow:0 0 40px rgba(168,85,247,.9); } 100% { background:linear-gradient(90deg,rgba(168,85,247,.35),rgba(168,85,247,.1)); } }
+.message.win .nick { color:#e9d5ff; }
+.message.fm-message { background:linear-gradient(90deg,#2a1040,#1a0a29); padding:8px 12px; border-radius:10px; border-left:3px solid #c084fc; }
+.message.fm-message .fm-label { font-size:9px; font-weight:900; color:#c084fc; letter-spacing:1px; text-transform:uppercase; text-align:right; width:100%; margin-bottom:3px; }
+.participant-badge {
+    display:inline-block;
+    background:linear-gradient(135deg,#22c55e,#16a34a,#15803d);
+    color:#fff;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.8px;
+    padding:3px 7px;
+    border-radius:6px;
+    text-transform:uppercase;
+    box-shadow:0 0 10px rgba(34,197,94,.8), 0 0 20px rgba(34,197,94,.4), inset 0 1px 0 rgba(255,255,255,.3);
+    flex-shrink:0;
+    line-height:1;
+    text-shadow:0 1px 2px rgba(0,0,0,.4);
+    animation:participantPulse 2.5s ease-in-out infinite;
+}
+@keyframes participantPulse {
+    0%,100% { box-shadow:0 0 10px rgba(34,197,94,.8), 0 0 20px rgba(34,197,94,.4), inset 0 1px 0 rgba(255,255,255,.3); }
+    50% { box-shadow:0 0 14px rgba(34,197,94,1), 0 0 28px rgba(34,197,94,.6), inset 0 1px 0 rgba(255,255,255,.3); }
+}
+.logout-btn { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #a855f7; color:#c084fc; padding:8px 16px; border-radius:11px; font-size:12px; cursor:pointer; font-weight:700; transition:.25s; margin-left:12px; }
+.logout-btn:hover { background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; box-shadow:0 0 20px rgba(168,85,247,.6); transform:translateY(-1px); }
+.right-panel { width:300px; background:linear-gradient(180deg,#14101f 0%,#0d0916 100%); border-radius:22px; padding:14px; display:flex; flex-direction:column; gap:12px; border:1px solid #2a1f42; flex-shrink:0; position:relative; z-index:2; overflow-y:auto; box-shadow:0 20px 50px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.04); }
+.right-panel::-webkit-scrollbar { width:6px; }
+.right-panel::-webkit-scrollbar-thumb { background:linear-gradient(180deg,#a855f7,#7c3aed); border-radius:3px; }
+.rules-box { background:linear-gradient(145deg,#1a1428,#120e1c); border-radius:16px; padding:18px 14px; border:1px solid #2a1f42; text-align:center; flex-shrink:0; position:relative; overflow:hidden; }
+.rules-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#a855f7,transparent); }
+.rules-box .title { font-size:11px; color:#a99fbb; margin-bottom:8px; font-weight:700; letter-spacing:1px; }
+.rules-box .value { font-size:14px; color:#c084fc; font-weight:800; text-shadow:0 0 16px rgba(168,85,247,.5); }
+.race-track { display:none; flex-direction:column; position:relative; z-index:2; background:linear-gradient(180deg,#1b1230 0%,#160f27 50%,#0f0a1c 100%); border-radius:20px; border:2px solid #7c3aed; overflow:hidden; max-height:400px; box-shadow:0 20px 50px rgba(124,58,237,.4), inset 0 2px 20px rgba(0,0,0,.5); }
+.race-track.active { display:flex; }
+.race-header-bar { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:linear-gradient(90deg,rgba(124,58,237,.35),rgba(168,85,247,.2)); border-bottom:2px solid #7c3aed; }
+.race-header-bar .race-title { font-size:14px; color:#fff; font-weight:800; letter-spacing:.5px; }
+.race-header-bar .race-timer { font-size:16px; color:#c084fc; font-weight:900; background:#050309; padding:6px 16px; border-radius:12px; letter-spacing:1.5px; box-shadow:0 0 20px rgba(168,85,247,.4); }
+.race-header-bar .speed-hint { font-size:11px; color:#c084fc; background:rgba(0,0,0,.5); padding:5px 12px; border-radius:8px; font-weight:600; }
+.race-pool { position:relative; width:100%; height:280px; overflow:hidden; }
+.race-pool::before { content:''; position:absolute; top:0; left:0; right:0; height:8px; background:repeating-linear-gradient(90deg, rgba(168,85,247,.5) 0 8px, transparent 8px 16px); opacity:.7; }
+.race-pool .finish-line { position:absolute; right:20px; top:0; bottom:0; width:16px; background:repeating-conic-gradient(#000 0 25%, #fff 0 50%) 0 0/16px 16px; border-left:2px solid #000; border-right:2px solid #000; z-index:5; box-shadow:0 0 20px rgba(255,255,255,.4); }
+.race-duck { position:absolute; width:44px; height:40px; z-index:2; will-change:transform; }
+.race-duck svg { width:100%; height:100%; display:block; filter:drop-shadow(0 4px 6px rgba(0,0,0,.5)); }
+.race-duck .duck-label { position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:10px; color:#fff; background:linear-gradient(135deg,#7c3aed,#a855f7); padding:2px 7px; border-radius:6px; white-space:nowrap; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,.5); }
+.race-duck .duck-place { position:absolute; top:50%; left:-32px; transform:translateY(-50%); font-size:15px; color:#c084fc; font-weight:900; text-shadow:0 0 10px rgba(168,85,247,.8); }
+.wheel-track { display:none; flex-direction:column; align-items:center; justify-content:center; position:relative; z-index:2; background:linear-gradient(145deg,#14101f,#0d0916); border-radius:20px; border:2px solid #a855f7; padding:22px; max-height:520px; box-shadow:0 20px 60px rgba(168,85,247,.4), inset 0 2px 30px rgba(0,0,0,.5); }
+.wheel-track.active { display:flex; }
+.wheel-title { font-size:15px; color:#c084fc; font-weight:800; margin-bottom:14px; letter-spacing:.5px; text-shadow:0 0 16px rgba(168,85,247,.6); }
+.wheel-container { position:relative; width:420px; height:420px; max-width:100%; }
+.wheel-canvas { width:100%; height:100%; border-radius:50%; box-shadow:0 0 60px rgba(168,85,247,.6), inset 0 0 40px rgba(0,0,0,.5); }
+.wheel-pointer { position:absolute; right:-15px; top:50%; transform:translateY(-50%); width:0; height:0; border-top:22px solid transparent; border-bottom:22px solid transparent; border-right:34px solid #c084fc; filter:drop-shadow(0 0 14px rgba(192,132,252,.9)); z-index:10; }
+.wheel-center-btn { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:96px; height:96px; border-radius:50%; background:linear-gradient(135deg,#a855f7,#7c3aed); border:4px solid #050309; color:#fff; font-size:14px; font-weight:900; cursor:pointer; z-index:9; box-shadow:0 0 40px rgba(168,85,247,.9), inset 0 2px 10px rgba(255,255,255,.2); text-transform:uppercase; transition:.25s; letter-spacing:.5px; }
+.wheel-center-btn:hover { transform:translate(-50%,-50%) scale(1.08); box-shadow:0 0 60px rgba(168,85,247,1); }
+.wheel-center-btn:disabled { opacity:.5; cursor:not-allowed; }
+#winner-modal, #mode-modal, #player-data-modal, #settings-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(3,2,6,.9); backdrop-filter:blur(8px); z-index:999; justify-content:center; align-items:center; padding:20px; }
+.winner-window, .mode-window, .player-data-window, .settings-window { width:100%; max-width:700px; background:linear-gradient(180deg,#14101f 0%,#0d0916 100%); border-radius:22px; overflow:hidden; border:1px solid #a855f7; box-shadow:0 0 80px rgba(124,58,237,.5), 0 30px 60px rgba(0,0,0,.8); animation:popIn .35s cubic-bezier(.2,1.4,.5,1); }
+.mode-window { max-width:520px; }
+.player-data-window { max-width:520px; }
+.settings-window { max-width:560px; }
 @keyframes popIn { from { transform:scale(.9); opacity:0; } to { transform:scale(1); opacity:1; } }
-.admin-header { background:linear-gradient(135deg,#a855f7,#7c3aed); padding:22px 26px; display:flex; justify-content:space-between; align-items:center; position:relative; }
-.admin-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent); }
-.admin-header h1 { color:#fff; font-size:20px; font-weight:900; letter-spacing:.5px; }
-.admin-header .lock { font-size:22px; }
-.admin-body { padding:26px; display:flex; flex-direction:column; gap:18px; }
-.section { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:12px; }
-.section .title { font-size:13px; color:#c084fc; font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
-.section .desc { font-size:12px; color:#a99fbb; line-height:1.5; }
-.field { display:flex; flex-direction:column; gap:6px; }
-.field label { font-size:11px; color:#c084fc; text-transform:uppercase; letter-spacing:.8px; font-weight:800; }
-.field input { width:100%; padding:13px 15px; background:linear-gradient(145deg,#0d0916,#0a0712); border:1px solid #2a1f42; border-radius:12px; color:#f5f5f5; font-size:14px; outline:none; transition:.25s; }
-.field input:focus { border-color:#a855f7; background:#171226; box-shadow:0 0 0 4px rgba(168,85,247,.15), 0 0 18px rgba(168,85,247,.3); }
-.btn { width:100%; padding:15px; border:none; border-radius:14px; font-size:14px; font-weight:800; cursor:pointer; letter-spacing:.4px; transition:.25s; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px; position:relative; overflow:hidden; }
-.btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent); transition:.6s; }
-.btn:hover::before { left:100%; }
-.btn-primary { background:linear-gradient(135deg,#a855f7,#7c3aed); box-shadow:0 8px 22px rgba(124,58,237,.4); }
-.btn-primary:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(168,85,247,.6); }
-.btn-danger { background:linear-gradient(135deg,#ff4d6d,#c81e4a); box-shadow:0 8px 22px rgba(255,77,109,.35); }
-.btn-danger:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(255,77,109,.55); }
-.btn-warn { background:linear-gradient(135deg,#f59e0b,#d97706); box-shadow:0 8px 22px rgba(245,158,11,.35); }
-.btn-warn:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(245,158,11,.55); }
-.status { padding:14px 18px; border-radius:12px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:10px; border:1px solid; }
-.status.active { background:linear-gradient(90deg,rgba(168,85,247,.25),rgba(168,85,247,.05)); border-color:#a855f7; color:#e9d5ff; }
-.status.empty { background:linear-gradient(90deg,rgba(255,77,109,.15),transparent); border-color:#3a2b55; color:#a99fbb; }
-.status .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-.status.active .dot { background:#a855f7; box-shadow:0 0 12px #a855f7; animation:dotPulse 1.5s infinite; }
-.status.empty .dot { background:#555; }
-@keyframes dotPulse { 0%,100% { box-shadow:0 0 8px #a855f7; } 50% { box-shadow:0 0 16px #a855f7, 0 0 24px #a855f7; } }
-.mode-tabs { display:flex; gap:8px; }
-.mode-tab { flex:1; padding:11px; text-align:center; cursor:pointer; background:linear-gradient(145deg,#0d0916,#0a0712); border:2px solid #2a1f42; border-radius:12px; font-size:12px; font-weight:800; color:#a99fbb; transition:.25s; letter-spacing:.3px; }
-.mode-tab:hover { border-color:#7c3aed; color:#c084fc; }
-.mode-tab.active { background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; border-color:#a855f7; box-shadow:0 0 20px rgba(168,85,247,.5); }
-.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; padding:14px 26px; border-radius:14px; font-size:13px; font-weight:800; letter-spacing:.3px; box-shadow:0 12px 40px rgba(168,85,247,.6); opacity:0; transition:.35s cubic-bezier(.2,1.4,.5,1); z-index:9999; pointer-events:none; }
-.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
-.toast.danger { background:linear-gradient(135deg,#ff4d6d,#c81e4a); box-shadow:0 12px 40px rgba(255,77,109,.6); }
+.winner-header, .mode-header, .player-data-header, .settings-header { background:linear-gradient(135deg,#a855f7,#7c3aed); padding:18px 24px; display:flex; justify-content:space-between; align-items:center; position:relative; }
+.winner-header::after, .mode-header::after, .player-data-header::after, .settings-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent); }
+.winner-header h2, .mode-header h2, .player-data-header h2, .settings-header h2 { color:#fff; font-size:18px; font-weight:800; letter-spacing:.3px; }
+.winner-close, .mode-close, .player-data-header .close-btn, .settings-close { background:rgba(0,0,0,.25); border:none; color:#fff; width:36px; height:36px; border-radius:11px; cursor:pointer; font-size:18px; font-weight:700; transition:.25s; }
+.winner-close:hover, .mode-close:hover, .player-data-header .close-btn:hover, .settings-close:hover { background:rgba(0,0,0,.5); transform:rotate(90deg); }
+.mode-body { padding:26px; display:flex; flex-direction:column; gap:14px; }
+.mode-option { display:flex; align-items:center; gap:16px; background:linear-gradient(145deg,#1a1428,#120e1c); border:2px solid #2a1f42; border-radius:16px; padding:22px 24px; cursor:pointer; transition:.3s; position:relative; overflow:hidden; }
+.mode-option::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,#a855f7,#7c3aed); transform:scaleY(0); transition:.3s; }
+.mode-option:hover { border-color:#a855f7; background:linear-gradient(145deg,#1f1730,#160f24); transform:translateY(-4px); box-shadow:0 15px 35px rgba(168,85,247,.3); }
+.mode-option:hover::before { transform:scaleY(1); }
+.mode-option .mode-icon { font-size:38px; flex-shrink:0; filter:drop-shadow(0 0 12px rgba(168,85,247,.6)); }
+.mode-option .mode-info { display:flex; flex-direction:column; gap:4px; }
+.mode-option .mode-title { font-size:15px; font-weight:800; color:#c084fc; }
+.mode-option .mode-sub { font-size:12px; color:#a99fbb; }
+.settings-body { padding:24px; display:flex; flex-direction:column; gap:14px; max-height:75vh; overflow-y:auto; }
+.settings-section { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:14px; padding:18px; display:flex; flex-direction:column; gap:12px; }
+.settings-section .section-title { font-size:13px; color:#c084fc; font-weight:800; margin-bottom:2px; letter-spacing:.3px; }
+.settings-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.settings-row .row-label { font-size:13px; color:#f5f5f5; font-weight:500; }
+.settings-row .row-sub { font-size:11px; color:#7a6f8c; display:block; margin-top:3px; }
+.winner-body { padding:26px; display:flex; flex-direction:column; gap:20px; max-height:80vh; overflow-y:auto; }
+.winner-body::-webkit-scrollbar { width:6px; }
+.winner-body::-webkit-scrollbar-thumb { background:#3a2b55; border-radius:3px; }
+.winner-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+.last-message-box { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:12px; padding:14px 18px; min-width:200px; flex:1; }
+.last-message-box .label { font-size:10px; color:#7a6f8c; text-transform:uppercase; margin-bottom:5px; letter-spacing:.5px; font-weight:700; }
+.last-message-box .msg { font-size:13px; color:#f5f5f5; font-weight:600; margin-bottom:3px; word-break:break-word; }
+.last-message-box .date { font-size:11px; color:#7a6f8c; }
+.timer-badge { background:linear-gradient(135deg,#ff4d6d,#c81e4a); color:white; padding:10px 18px; border-radius:22px; font-size:14px; font-weight:800; transition:.3s; box-shadow:0 8px 22px rgba(255,77,109,.4); flex-shrink:0; }
+.timer-badge.answered { background:linear-gradient(135deg,#a855f7,#7c3aed); box-shadow:0 8px 22px rgba(168,85,247,.6); }
+.winner-avatar { width:130px; height:130px; border-radius:50%; background:linear-gradient(145deg,#1a1428,#120e1c); margin:0 auto; display:flex; align-items:center; justify-content:center; border:3px solid #a855f7; overflow:hidden; box-shadow:0 0 40px rgba(168,85,247,.7), inset 0 0 30px rgba(168,85,247,.2); position:relative; }
+.winner-avatar svg { width:65px; height:65px; fill:#7a6f8c; }
+.winner-name { text-align:center; font-size:36px; font-weight:900; background:linear-gradient(135deg,#e9d5ff,#c084fc,#a855f7); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 22px rgba(168,85,247,.7)); word-break:break-word; }
+.winner-info { display:flex; flex-direction:column; gap:12px; align-items:center; }
+.info-row { display:flex; align-items:center; gap:8px; background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:22px; padding:12px 20px; font-size:13px; color:#f5f5f5; min-width:340px; justify-content:space-between; }
+.info-row .info-value { color:#c084fc; font-weight:800; }
+.winner-actions { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.action-btn-modal { padding:13px; border:none; border-radius:14px; font-size:12px; font-weight:800; cursor:pointer; color:#fff; text-decoration:none; text-align:center; transition:.25s; letter-spacing:.3px; display:flex; align-items:center; justify-content:center; }
+.action-btn-modal:hover { transform:translateY(-3px); }
+.action-btn-modal.purple { background:linear-gradient(135deg,#a855f7,#7c3aed); box-shadow:0 8px 22px rgba(124,58,237,.4); }
+.action-btn-modal.purple:hover { box-shadow:0 12px 30px rgba(168,85,247,.6); }
+.action-btn-modal.green { background:linear-gradient(135deg,#9333ea,#6d28d9); box-shadow:0 8px 22px rgba(147,51,234,.4); }
+.action-btn-modal.green:hover { box-shadow:0 12px 30px rgba(192,132,252,.6); }
+.action-btn-modal.orange { background:linear-gradient(135deg,#c084fc,#a855f7); box-shadow:0 8px 22px rgba(192,132,252,.4); }
+.action-btn-modal.orange:hover { box-shadow:0 12px 30px rgba(192,132,252,.6); }
+.last-messages-block { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:16px; padding:18px; }
+.last-messages-block .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid #2a1f42; }
+.last-messages-block .header .title { font-size:14px; color:#f5f5f5; font-weight:700; }
+.last-messages-block .header .count { background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; padding:4px 14px; border-radius:12px; font-size:12px; font-weight:800; box-shadow:0 0 16px rgba(168,85,247,.5); }
+.loader-circle { width:44px; height:44px; border:3px solid #2a1f42; border-top-color:#a855f7; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto; box-shadow:0 0 20px rgba(168,85,247,.4); }
+@keyframes spin { to { transform:rotate(360deg); } }
+.last-messages-block .empty { display:flex; flex-direction:column; align-items:center; gap:12px; padding:22px 0; }
+.last-messages-block .empty-text { font-size:13px; color:#a99fbb; font-weight:600; }
+.winner-message-item { font-size:13px; color:#f5f5f5; padding:10px 14px; background:linear-gradient(145deg,#0d0916,#0a0712); border-radius:10px; margin-bottom:7px; border-left:2px solid #a855f7; }
+.winner-message-item .time { color:#7a6f8c; font-size:11px; margin-right:10px; font-weight:600; }
+.player-data-body { padding:24px; display:flex; flex-direction:column; gap:14px; max-height:80vh; overflow-y:auto; }
+.player-data-field { display:flex; flex-direction:column; gap:6px; }
+.player-data-field label { font-size:11px; color:#c084fc; text-transform:uppercase; letter-spacing:.8px; font-weight:800; }
+.player-data-field input { width:100%; padding:12px 14px; background:linear-gradient(145deg,#0d0916,#0a0712); border:1px solid #2a1f42; border-radius:11px; color:#f5f5f5; font-size:13px; outline:none; transition:.25s; }
+.player-data-field input:focus { border-color:#a855f7; background:#171226; box-shadow:0 0 0 4px rgba(168,85,247,.15), 0 0 18px rgba(168,85,247,.3); }
+.player-data-field input[readonly] { background:linear-gradient(145deg,#0a0712,#08060d); color:#c084fc; font-weight:800; border-color:#a855f7; }
+.player-data-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+.player-data-actions button { padding:14px; border:none; border-radius:12px; font-size:13px; font-weight:800; cursor:pointer; transition:.25s; letter-spacing:.3px; }
+.player-data-actions .save-btn { background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; box-shadow:0 8px 22px rgba(124,58,237,.4); }
+.player-data-actions .save-btn:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(168,85,247,.6); }
+.player-data-actions .delete-btn { background:linear-gradient(145deg,#2a1f42,#1a1428); color:#ff4d6d; border:1px solid #3a2b55; }
+.player-data-actions .delete-btn:hover { background:linear-gradient(145deg,#3a2b55,#2a1f42); transform:translateY(-2px); }
 </style>
 </head>
 <body>
 
-<div class="admin-wrap">
-    <div class="admin-card">
-        <div class="admin-header">
-            <h1>⚙️ АДМИН-ПАНЕЛЬ</h1>
-            <span class="lock">🔒</span>
+<div class="bg-stripes"></div>
+
+<div id="login-screen">
+    <div class="login-container">
+        <h1>deminaleksey | Авторизация</h1>
+        <div class="input-group">
+            <label>🔑 Введите пароль доступа</label>
+            <input type="password" id="password-input" placeholder="Пароль">
         </div>
+        <button class="btn-login" onclick="checkPassword()">Войти в приложение</button>
+        <div class="error-msg" id="error-msg">Неверный пароль!</div>
+    </div>
+</div>
 
-        <div class="admin-body">
-
-            <div class="section">
-                <div class="title">🎯 Форс-победитель</div>
-                <div class="desc">Задай ник, который гарантированно выиграет в следующем розыгрыше. Регистр не важен.</div>
-
-                <div class="field">
-                    <label>Ник на Twitch</label>
-                    <input type="text" id="force-nick" placeholder="например: username">
-                </div>
-
-                <div class="field">
-                    <label>Действует для режима</label>
-                    <div class="mode-tabs">
-                        <div class="mode-tab active" data-mode="all" onclick="selectMode(this)">ВСЕ</div>
-                        <div class="mode-tab" data-mode="messages" onclick="selectMode(this)">💬</div>
-                        <div class="mode-tab" data-mode="ducks" onclick="selectMode(this)">🦆</div>
-                        <div class="mode-tab" data-mode="wheel" onclick="selectMode(this)">🎡</div>
+<div id="main-screen">
+    <div class="sidebar">
+        <div class="sidebar-top-title">DEMINALEXEY</div>
+        <div class="sidebar-header-bar">
+            <div class="sidebar-header-left"><span>Панель управления</span></div>
+            <div class="sidebar-header-center" onclick="openSettings()">Настройки</div>
+            <button class="sidebar-settings-btn" onclick="openSettings()">⚙️</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="tab-page active" id="tab-giveaway">
+                <div style="display:flex;gap:8px;">
+                    <div style="flex:1;">
+                        <div class="field-label">📺 Канал</div>
+                        <div class="channel-block">
+                            <div class="channel-avatar" id="channel-avatar"><span id="channel-avatar-placeholder">🎮</span></div>
+                            <div class="channel-info">
+                                <div class="name" id="channel-name-display">deminaleksey</div>
+                                <div class="sub">Twitch-канал</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="flex:1;">
+                        <div class="field-label">🔑 Ключевое слово</div>
+                        <input class="input-field" type="text" placeholder="Пусто = все" id="keyword-input">
                     </div>
                 </div>
-
-                <button class="btn btn-primary" onclick="saveForceNick()">💾 Установить форс-победителя</button>
-                <button class="btn btn-danger" onclick="clearForceNick()">🗑️ Убрать форс</button>
-
-                <div class="status empty" id="force-status">
-                    <span class="dot"></span>
-                    <span id="force-status-text">Форс не задан</span>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="cb-all" checked>
+                    <div>
+                        <span class="main-text">Все в чате без ключевого слова</span>
+                        <span class="sub-text">Регает всех, кто пишет в чат.</span>
+                    </div>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="cb-fm">
+                    <div>
+                        <span class="main-text">(FM) Только первые сообщения</span>
+                        <span class="sub-text">Регает только тех, кто пишет первое сообщение.</span>
+                    </div>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="cb-new">
+                    <div>
+                        <span class="main-text">(NEW) Никогда не выигрывал</span>
+                        <span class="sub-text">Регает только тех, кого нет в базе победителей.</span>
+                    </div>
+                </label>
+                <button class="action-btn btn-purple" onclick="reconnect()">🔄 Переподключиться</button>
+                <button class="action-btn btn-pink" onclick="openModeModal()">⏱️ Запустить розыгрыш</button>
+                <div class="stat-box">
+                    <div class="stat-title">Участников:</div>
+                    <div class="stat-number" id="participants-count">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number muted" id="failed-count">0</div>
+                    <div class="stat-sub">не прошли проверку</div>
+                </div>
+                <div class="winners-log" id="winners-log">
+                    <div class="log-title">🏆 История побед</div>
+                    <div id="winners-log-entries"><div class="log-empty">Пока нет победителей</div></div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="section">
-                <div class="title">🏆 История побед</div>
-                <div class="desc">Очистка истории побед и базы победителей (используется для фильтра "NEW").</div>
-
-                <div class="status empty" id="winners-status">
-                    <span class="dot"></span>
-                    <span id="winners-status-text">Загрузка...</span>
-                </div>
-
-                <button class="btn btn-warn" onclick="clearWinnersLog()">📜 Очистить историю побед</button>
-                <button class="btn btn-danger" onclick="clearWinnersBase()">💥 Очистить базу победителей (NEW)</button>
-                <button class="btn btn-danger" onclick="clearAll()">☠️ Очистить ВСЁ (история + база)</button>
+    <div class="center-panel">
+        <div class="chat-header">
+            <div class="left">Сообщение в чате — участие. <span style="color:#c084fc;font-weight:700;">!speed</span> — ускорить утку</div>
+            <div class="right">
+                <span class="online-dot" id="online-dot"></span>
+                <span id="channel-name-header">deminaleksey</span>
+                <span class="count" id="viewer-count">0</span>
+                <button class="logout-btn" onclick="logout()">🚪 Выйти</button>
             </div>
+        </div>
 
+        <div class="race-track" id="race-track">
+            <div class="race-header-bar">
+                <div class="race-title" id="race-title">🦆 Гонка уточек</div>
+                <div class="race-timer" id="race-timer">01:00</div>
+                <div class="speed-hint" id="speed-hint" style="display:none;">!speed — ускорить (макс 5)</div>
+            </div>
+            <div class="race-pool" id="race-pool"><div class="finish-line"></div></div>
+        </div>
+
+        <div class="wheel-track" id="wheel-track">
+            <div class="wheel-title" id="wheel-title">🎡 Колесо фортуны</div>
+            <div class="wheel-container">
+                <canvas class="wheel-canvas" id="wheel-canvas" width="600" height="600"></canvas>
+                <div class="wheel-pointer"></div>
+                <button class="wheel-center-btn" id="wheel-center-btn" onclick="spinWheel()">КРУТИТЬ</button>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message system">Подключение к чату deminaleksey...</div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="rules-box">
+            <div class="title">АКТИВНЫЕ ПРАВИЛА</div>
+            <div class="value" id="active-rules">🏆 кд победы: 28 дн.</div>
         </div>
     </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="mode-modal">
+    <div class="mode-window">
+        <div class="mode-header">
+            <h2>🎲 Выбор режима розыгрыша</h2>
+            <button class="mode-close" onclick="closeModeModal()">×</button>
+        </div>
+        <div class="mode-body">
+            <div class="mode-option" onclick="startMode('messages')">
+                <div class="mode-icon">💬</div>
+                <div class="mode-info">
+                    <div class="mode-title">Обычно по сообщениям</div>
+                    <div class="mode-sub">Случайный победитель из всех участников</div>
+                </div>
+            </div>
+            <div class="mode-option" onclick="startMode('ducks')">
+                <div class="mode-icon">🦆</div>
+                <div class="mode-info">
+                    <div class="mode-title">Гонка утками</div>
+                    <div class="mode-sub">!speed — ускорить свою утку</div>
+                </div>
+            </div>
+            <div class="mode-option" onclick="startMode('wheel')">
+                <div class="mode-icon">🎡</div>
+                <div class="mode-info">
+                    <div class="mode-title">Колесо фортуны</div>
+                    <div class="mode-sub">Крутится и останавливается</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="settings-modal">
+    <div class="settings-window">
+        <div class="settings-header">
+            <h2>⚙️ Настройки</h2>
+            <button class="settings-close" onclick="closeSettings()">×</button>
+        </div>
+        <div class="settings-body">
+            <div class="settings-section">
+                <div class="section-title">🦆 Гонка уточек</div>
+                <div class="settings-row">
+                    <div>
+                        <div class="row-label">Длительность (мин, 1-5)</div>
+                        <span class="row-sub">Сколько идёт гонка</span>
+                    </div>
+                    <input class="small-input" type="number" min="1" max="5" value="1" id="race-duration">
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="section-title">⏱️ КД победы</div>
+                <div class="settings-row">
+                    <div>
+                        <div class="row-label">Сколько дней ждать после победы</div>
+                        <span class="row-sub">Кулдаун</span>
+                    </div>
+                    <input class="small-input" type="number" value="28" id="rule-kd">
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="section-title">💎 Подписка на канал</div>
+                <div class="settings-row">
+                    <div>
+                        <div class="row-label">Мин. месяцев подписки</div>
+                        <span class="row-sub">Для участия</span>
+                    </div>
+                    <input class="small-input" type="number" value="1" id="rule-sub">
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="section-title">⏳ Watchtime</div>
+                <div class="settings-row">
+                    <div>
+                        <div class="row-label">Мин. часов просмотра</div>
+                        <span class="row-sub">Для участия</span>
+                    </div>
+                    <input class="small-input" type="number" value="1" id="rule-watchtime">
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="section-title">💬 Сообщений на канале</div>
+                <div class="settings-row">
+                    <div>
+                        <div class="row-label">Мин. сообщений</div>
+                        <span class="row-sub">Для участия</span>
+                    </div>
+                    <input class="small-input" type="number" value="5" id="rule-msgs">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="winner-modal">
+    <div class="winner-window">
+        <div class="winner-header">
+            <h2>⭐ Победитель:</h2>
+            <button class="winner-close" onclick="closeWinnerModal()">×</button>
+        </div>
+        <div class="winner-body">
+            <div class="winner-top">
+                <div class="last-message-box">
+                    <div class="label">последнее сообщение</div>
+                    <div class="msg" id="winner-last-msg">—</div>
+                    <div class="date" id="winner-last-date">—</div>
+                </div>
+                <div class="timer-badge" id="winner-timer">00:00</div>
+            </div>
+            <div class="winner-info">
+                <div class="winner-avatar" id="winner-avatar">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <div class="winner-name" id="winner-name">—</div>
+                <div class="info-row">
+                    <span>💬 Сообщений на канале <strong>deminaleksey</strong>:</span>
+                    <span class="info-value" id="deminaleksey">0</span>
+                </div>
+            </div>
+            <div class="winner-actions">
+                <button class="action-btn-modal purple" onclick="openUserCard()">📋 Twitch Card</button>
+                <a class="action-btn-modal green" id="following-link" target="_blank" href="#">👥 Following</a>
+                <button class="action-btn-modal orange" onclick="rerollWinner()">🔄 Реролл</button>
+            </div>
+            <div class="last-messages-block">
+                <div class="header">
+                    <span class="title">Последние сообщения от победителя:</span>
+                    <span class="count" id="winner-messages-count">0</span>
+                </div>
+                <div id="winner-messages-list">
+                    <div class="empty">
+                        <div class="loader-circle"></div>
+                        <div class="empty-text">Ожидание сообщений от победителя...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="player-data-modal">
+    <div class="player-data-window">
+        <div class="player-data-header">
+            <h2 id="player-data-title">📋 Данные игрока</h2>
+            <button class="close-btn" onclick="closePlayerDataModal()">×</button>
+        </div>
+        <div class="player-data-body">
+            <div class="player-data-field"><label>Ник на Twitch</label><input type="text" id="pd-username" readonly></div>
+            <div class="player-data-field"><label>Telegram</label><input type="text" id="pd-telegram" placeholder="@username"></div>
+            <div class="player-data-field"><label>Discord</label><input type="text" id="pd-discord" placeholder="username#0000"></div>
+            <div class="player-data-field"><label>Сайт Upgrader</label><input type="text" id="pd-upgrader" placeholder="https://..."></div>
+            <div class="player-data-field"><label>Сумма депозита</label><input type="text" id="pd-deposit" placeholder="например 5000 ₽"></div>
+            <div class="player-data-field"><label>Сумма вывода</label><input type="text" id="pd-withdraw" placeholder="например 12000 ₽"></div>
+            <div class="player-data-actions">
+                <button class="save-btn" onclick="savePlayerData()">💾 Сохранить</button>
+                <button class="delete-btn" onclick="deletePlayerData()">🗑️ Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -114,90 +517,819 @@ const firebaseConfig = { databaseURL: "https://malibash-8e9ef-default-rtdb.fireb
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let currentMode = 'all';
+const CHANNEL_NAME = 'deminaleksey';
+const STORAGE_PREFIX = 'deminaleksey_panel';
+const participants = new Set();
+const winnersBase = new Set();
+const processedMessages = new Set();
+const lastMessages = new Map();
+let participantCount = 0;
+let failedCount = 0;
+let ws = null;
+let giveawayActive = false;
+let reconnectTimeout = null;
+let isConnected = false;
+let viewerInterval = null;
+let winnerTimerInterval = null;
+let winnerTimerSeconds = 0;
+let winnerTimerStopped = false;
+let currentWinner = null;
+let winnerMessages = [];
+let messageQueue = [];
+let flushScheduled = false;
+let connectionId = 0;
+let winnersLog = [];
+let playerData = {};
+let participantsHistory = [];
+let raceRunning = false;
+let raceRAF = null;
+let raceStartTime = 0;
+let raceDurationMs = 0;
+let raceDucks = [];
+let raceWinnerDeclared = false;
+let speedCounters = {};
+let raceMode = false;
+let wheelMode = false;
+let wheelRunning = false;
+let wheelRAF = null;
+let wheelAngle = 0;
+let wheelStartTime = 0;
+let wheelDurationMs = 35000;
+let wheelParticipants = [];
+let wheelWinnerDeclared = false;
+let forceWinner = null;
 
-function selectMode(el) {
-    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    currentMode = el.dataset.mode;
+function loadFromCloud() {
+    db.ref('deminaleksey_panel').on('value', (snap) => {
+        const data = snap.val();
+        if (!data) return;
+        if (data.winnersLog) winnersLog = data.winnersLog;
+        if (data.playerData) playerData = data.playerData;
+        if (data.winnersBase) { winnersBase.clear(); data.winnersBase.forEach(n => winnersBase.add(n)); }
+        if (data.participantsHistory) participantsHistory = data.participantsHistory;
+        if (data.failedCount !== undefined) { failedCount = data.failedCount; document.getElementById('failed-count').textContent = failedCount; }
+        renderWinnersLog();
+    });
+    db.ref('deminaleksey_panel/forceWinner').on('value', (snap) => { forceWinner = snap.val(); });
 }
 
-function showToast(text, danger = false) {
-    const t = document.getElementById('toast');
-    t.textContent = text;
-    t.className = 'toast' + (danger ? ' danger' : '');
-    t.classList.add('show');
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+function saveToCloud() {
+    db.ref('deminaleksey_panel').update({
+        winnersLog: winnersLog,
+        playerData: playerData,
+        winnersBase: Array.from(winnersBase),
+        participantsHistory: participantsHistory,
+        failedCount: failedCount
+    });
+}
+function saveAll() { saveToCloud(); }
+
+function duckSVG(index) {
+    const accessories = [
+        `<ellipse cx="20" cy="10" rx="10" ry="4" fill="#7c3aed"/><path d="M12 10 Q20 2 28 10 L28 12 L12 12 Z" fill="#7c3aed"/>`,
+        `<circle cx="16" cy="14" r="4" fill="none" stroke="#222" stroke-width="1.5"/><circle cx="24" cy="14" r="4" fill="none" stroke="#222" stroke-width="1.5"/>`,
+        `<ellipse cx="20" cy="9" rx="9" ry="3.5" fill="#c084fc"/><path d="M13 9 Q20 3 27 9 L27 11 L13 11 Z" fill="#c084fc"/>`,
+        null,
+        `<rect x="12" y="4" width="16" height="2" fill="#111"/><polygon points="20,1 30,6 20,9 10,6" fill="#111"/>`
+    ];
+    const acc = accessories[index % accessories.length];
+    if (index % accessories.length === 3) {
+        return `<svg viewBox="0 0 40 36"><ellipse cx="20" cy="26" rx="14" ry="8" fill="#a855f7"/><circle cx="24" cy="12" r="7" fill="#a855f7"/><circle cx="23" cy="11" r="1.5" fill="#111"/><path d="M29 12 L36 13 L29 15 Z" fill="#e9d5ff"/></svg>`;
+    }
+    return `<svg viewBox="0 0 40 36"><ellipse cx="20" cy="26" rx="14" ry="8" fill="#c084fc"/><circle cx="24" cy="12" r="7" fill="#c084fc"/><circle cx="23" cy="11" r="1.5" fill="#111"/><path d="M29 12 L36 13 L29 15 Z" fill="#e9d5ff"/>${acc || ''}</svg>`;
 }
 
-db.ref('deminaleksey_panel/forceWinner').on('value', (snap) => {
-    const data = snap.val();
-    const statusEl = document.getElementById('force-status');
-    const textEl = document.getElementById('force-status-text');
-    if (data && data.nick) {
-        statusEl.className = 'status active';
-        const modeLabel = { all:'все режимы', messages:'по сообщениям', ducks:'гонка', wheel:'колесо' }[data.mode || 'all'];
-        textEl.textContent = `🎯 Форс: ${data.nick} (${modeLabel})`;
-        document.getElementById('force-nick').value = data.nick;
-        document.querySelectorAll('.mode-tab').forEach(t => {
-            t.classList.toggle('active', t.dataset.mode === (data.mode || 'all'));
-        });
-        currentMode = data.mode || 'all';
+function addParticipantHistory(username, event) {
+    participantsHistory.push({ username, event, channel: CHANNEL_NAME, date: new Date().toLocaleString('ru-RU') });
+    if (participantsHistory.length > 5000) participantsHistory = participantsHistory.slice(-5000);
+    saveAll();
+}
+
+async function loadChannelAvatar() {
+    const avatarBox = document.getElementById('channel-avatar');
+    const avatarPlaceholder = document.getElementById('channel-avatar-placeholder');
+    if (avatarPlaceholder) avatarPlaceholder.remove();
+    const services = [
+        () => fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://decapi.me/twitch/avatar/${CHANNEL_NAME}`)}`).then(r => r.text()),
+        () => fetch(`https://corsproxy.io/?${encodeURIComponent(`https://decapi.me/twitch/avatar/${CHANNEL_NAME}`)}`).then(r => r.text()),
+        () => fetch(`https://decapi.me/twitch/avatar/${CHANNEL_NAME}`).then(r => r.text())
+    ];
+    for (const service of services) {
+        try {
+            const text = (await service()).trim();
+            if (text.startsWith('http')) { avatarBox.innerHTML = `<img src="${text}" alt="${CHANNEL_NAME}" onerror="this.parentElement.innerHTML='<span>🎮</span>'">`; return; }
+        } catch (e) {}
+    }
+}
+
+function spawnSparks() {
+    const icons = ['✦','✧','·','*','+','◆'];
+    setInterval(() => {
+        const s = document.createElement('div');
+        s.className = 'spark';
+        s.textContent = icons[Math.floor(Math.random() * icons.length)];
+        s.style.left = Math.random() * 100 + 'vw';
+        s.style.bottom = '-20px';
+        s.style.animationDuration = (9 + Math.random() * 9) + 's';
+        s.style.fontSize = (10 + Math.random() * 16) + 'px';
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 19000);
+    }, 700);
+}
+
+function initPanel() {
+    loadFromCloud();
+    connectToTwitchChat();
+    startViewerTracking();
+    updateActiveRules();
+    loadChannelAvatar();
+    spawnSparks();
+    loadSettingsFromCloud();
+}
+
+function checkPassword() {
+    const input = document.getElementById('password-input').value;
+    if (input === 'deminaleksey1337') {
+        localStorage.setItem(STORAGE_PREFIX + '_logged', '1');
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'flex';
+        document.getElementById('error-msg').style.display = 'none';
+        initPanel();
     } else {
-        statusEl.className = 'status empty';
-        textEl.textContent = 'Форс не задан';
+        document.getElementById('error-msg').style.display = 'block';
+        document.getElementById('password-input').value = '';
+        document.getElementById('password-input').focus();
+    }
+}
+document.getElementById('password-input').addEventListener('keypress', e => { if (e.key === 'Enter') checkPassword(); });
+
+window.addEventListener('load', () => {
+    if (localStorage.getItem(STORAGE_PREFIX + '_logged') === '1') {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-screen').style.display = 'flex';
+        initPanel();
     }
 });
 
-db.ref('deminaleksey_panel').on('value', (snap) => {
-    const data = snap.val() || {};
-    const base = data.winnersBase || [];
-    const log = data.winnersLog || [];
-    const el = document.getElementById('winners-status');
-    const textEl = document.getElementById('winners-status-text');
-    el.className = 'status active';
-    textEl.textContent = `🏆 В базе: ${base.length} • История: ${log.length}`;
+function loadSettingsFromCloud() {
+    db.ref('deminaleksey_panel/settings').on('value', (snap) => {
+        const s = snap.val();
+        if (!s) return;
+        if (s.race) document.getElementById('race-duration').value = s.race;
+        if (s.kd) document.getElementById('rule-kd').value = s.kd;
+        if (s.sub) document.getElementById('rule-sub').value = s.sub;
+        if (s.watchtime) document.getElementById('rule-watchtime').value = s.watchtime;
+        if (s.msgs) document.getElementById('rule-msgs').value = s.msgs;
+        updateActiveRules();
+    });
+}
+
+function updateActiveRules() {
+    const kd = document.getElementById('rule-kd').value || 28;
+    document.getElementById('active-rules').textContent = `🏆 кд победы: ${kd} дн.`;
+}
+['rule-kd','rule-sub','rule-watchtime','rule-msgs'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.addEventListener('input', updateActiveRules); el.addEventListener('change', updateActiveRules); }
 });
 
-function saveForceNick() {
-    const nick = document.getElementById('force-nick').value.trim();
-    if (!nick) { showToast('⚠️ Введи ник', true); return; }
-    db.ref('deminaleksey_panel/forceWinner').set({
-        nick: nick,
-        mode: currentMode,
-        setAt: new Date().toLocaleString('ru-RU')
-    }).then(() => showToast(`✅ Форс установлен: ${nick}`))
-      .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
+function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+document.getElementById('settings-modal').addEventListener('click', function(e) { if (e.target === this) closeSettings(); });
+
+function addWinnerToLog(username) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+    const dateStr = now.toLocaleDateString('ru-RU');
+    winnersLog.push({ username, date: `${dateStr} ${timeStr}` });
+    saveAll();
+    renderWinnersLog();
+}
+function renderWinnersLog() {
+    const container = document.getElementById('winners-log-entries');
+    if (!container) return;
+    if (winnersLog.length === 0) { container.innerHTML = '<div class="log-empty">Пока нет победителей</div>'; return; }
+    container.innerHTML = winnersLog.slice().reverse().map(w =>
+        `<div class="log-entry" onclick="openPlayerData('${w.username}')"><span>🏆 ${w.username}</span><span class="entry-date">${w.date}</span></div>`
+    ).join('');
 }
 
-function clearForceNick() {
-    db.ref('deminaleksey_panel/forceWinner').remove()
-        .then(() => showToast('🗑️ Форс убран'))
-        .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+let currentPlayerForData = null;
+function openPlayerData(username) {
+    currentPlayerForData = username;
+    document.getElementById('player-data-title').textContent = `📋 Данные: ${username}`;
+    document.getElementById('pd-username').value = username;
+    const d = playerData[username] || {};
+    document.getElementById('pd-telegram').value = d.telegram || '';
+    document.getElementById('pd-discord').value = d.discord || '';
+    document.getElementById('pd-upgrader').value = d.upgrader || '';
+    document.getElementById('pd-deposit').value = d.deposit || '';
+    document.getElementById('pd-withdraw').value = d.withdraw || '';
+    document.getElementById('player-data-modal').style.display = 'flex';
+}
+function closePlayerDataModal() { document.getElementById('player-data-modal').style.display = 'none'; currentPlayerForData = null; }
+function savePlayerData() {
+    if (!currentPlayerForData) return;
+    playerData[currentPlayerForData] = {
+        telegram: document.getElementById('pd-telegram').value.trim(),
+        discord: document.getElementById('pd-discord').value.trim(),
+        upgrader: document.getElementById('pd-upgrader').value.trim(),
+        deposit: document.getElementById('pd-deposit').value.trim(),
+        withdraw: document.getElementById('pd-withdraw').value.trim()
+    };
+    saveAll();
+    const name = currentPlayerForData;
+    closePlayerDataModal();
+    addSystemMessage(`💾 Данные для ${name} сохранены.`);
+}
+function deletePlayerData() {
+    if (!currentPlayerForData) return;
+    if (!confirm(`Удалить все данные для ${currentPlayerForData}?`)) return;
+    delete playerData[currentPlayerForData];
+    saveAll();
+    closePlayerDataModal();
+    addSystemMessage(`🗑️ Данные удалены.`);
 }
 
-function clearWinnersLog() {
-    if (!confirm('Очистить историю побед? (База для NEW останется)')) return;
-    db.ref('deminaleksey_panel/winnersLog').set([])
-        .then(() => showToast('📜 История побед очищена'))
-        .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+function logout() {
+    localStorage.removeItem(STORAGE_PREFIX + '_logged');
+    if (ws) { try { ws.close(); } catch(e){} ws = null; }
+    if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    if (viewerInterval) clearInterval(viewerInterval);
+    if (winnerTimerInterval) clearInterval(winnerTimerInterval);
+    if (raceRAF) cancelAnimationFrame(raceRAF);
+    if (wheelRAF) cancelAnimationFrame(wheelRAF);
+    closeWinnerModal();
+    document.getElementById('chat-messages').innerHTML = '';
+    participantCount = 0;
+    participants.clear(); processedMessages.clear(); lastMessages.clear();
+    document.getElementById('participants-count').textContent = '0';
+    document.getElementById('viewer-count').textContent = '0';
+    document.getElementById('online-dot').classList.remove('live');
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('main-screen').style.display = 'none';
+    document.getElementById('password-input').value = '';
+    document.getElementById('password-input').focus();
+    document.getElementById('race-track').classList.remove('active');
+    document.getElementById('wheel-track').classList.remove('active');
 }
 
-function clearWinnersBase() {
-    if (!confirm('Очистить базу победителей? После этого все смогут участвовать в NEW-режиме заново.')) return;
-    db.ref('deminaleksey_panel/winnersBase').set([])
-        .then(() => showToast('💥 База победителей очищена'))
-        .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+function reconnect() {
+    if (ws) { try { ws.close(); } catch(e){} ws = null; }
+    if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    participants.clear(); processedMessages.clear(); lastMessages.clear();
+    participantCount = 0;
+    document.getElementById('participants-count').textContent = '0';
+    document.getElementById('chat-messages').innerHTML = '';
+    addSystemMessage('🔄 Переподключение...');
+    connectToTwitchChat();
 }
 
-function clearAll() {
-    if (!confirm('ОЧИСТИТЬ ВСЁ: история побед + база победителей? Это нельзя отменить.')) return;
-    Promise.all([
-        db.ref('deminaleksey_panel/winnersLog').set([]),
-        db.ref('deminaleksey_panel/winnersBase').set([])
-    ]).then(() => showToast('☠️ Всё очищено', true))
-      .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+function openModeModal() {
+    if (participants.size === 0) { addSystemMessage('❌ Нет участников!'); return; }
+    document.getElementById('mode-modal').style.display = 'flex';
+}
+function closeModeModal() { document.getElementById('mode-modal').style.display = 'none'; }
+function startMode(mode) {
+    closeModeModal();
+    raceMode = false;
+    wheelMode = false;
+    if (mode === 'messages') startMessageGiveaway();
+    else if (mode === 'ducks') { raceMode = true; startDuckRace(); }
+    else if (mode === 'wheel') { wheelMode = true; startWheel(); }
+}
+
+function startMessageGiveaway() {
+    giveawayActive = true;
+    addSystemMessage('🎲 Розыгрыш запущен!');
+    const arr = Array.from(participants);
+    let winner = null;
+    if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'messages')) {
+        const target = forceWinner.nick.toLowerCase();
+        winner = arr.find(p => p.toLowerCase() === target) || null;
+    }
+    if (!winner) winner = arr[Math.floor(Math.random() * arr.length)];
+    addSystemMessage(`🏆 ПОБЕДИТЕЛЬ: ${winner}`);
+    winnersBase.add(winner);
+    addParticipantHistory(winner, 'win_messages');
+    saveAll();
+    addWinnerToLog(winner);
+    showWinnerModal(winner);
+    giveawayActive = false;
+}
+
+function startDuckRace() {
+    if (raceRunning) { addSystemMessage('⚠️ Гонка уже идёт!'); return; }
+    giveawayActive = true;
+    addSystemMessage('🦆 Гонка уточек!');
+    const ducks = Array.from(participants);
+    const pool = document.getElementById('race-pool');
+    pool.innerHTML = '<div class="finish-line"></div>';
+    const durationMin = Math.max(1, Math.min(5, parseInt(document.getElementById('race-duration').value) || 1));
+    raceDurationMs = durationMin * 60 * 1000;
+    raceStartTime = performance.now();
+    raceWinnerDeclared = false;
+    speedCounters = {};
+    raceDucks = [];
+    const poolHeight = pool.clientHeight || 280;
+    const startY = 20;
+    const maxY = poolHeight - 60;
+    const stepY = ducks.length > 1 ? (maxY - startY) / (ducks.length - 1) : 0;
+    let winnerIndex = Math.floor(Math.random() * ducks.length);
+    if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'ducks')) {
+        const target = forceWinner.nick.toLowerCase();
+        const idx = ducks.findIndex(d => d.toLowerCase() === target);
+        if (idx !== -1) winnerIndex = idx;
+    }
+    ducks.forEach((u, i) => {
+        const duckEl = document.createElement('div');
+        duckEl.className = 'race-duck';
+        duckEl.style.top = `${startY + i * stepY}px`;
+        duckEl.style.transform = 'translateX(0px)';
+        duckEl.innerHTML = `<div class="duck-label">${u}</div><div class="duck-place"></div>${duckSVG(i)}`;
+        pool.appendChild(duckEl);
+        raceDucks.push({
+            username: u, el: duckEl,
+            progressAtEnd: (i === winnerIndex) ? 100 : (70 + Math.random() * 25),
+            curve: 0.8 + Math.random() * 0.5,
+            boost: 1, position: 0, finished: false, isWinner: i === winnerIndex
+        });
+        speedCounters[u] = 0;
+    });
+    document.getElementById('speed-hint').style.display = 'block';
+    document.getElementById('race-timer').textContent = formatTime(raceDurationMs);
+    document.getElementById('race-track').classList.add('active');
+    raceRunning = true;
+    const poolWidth = pool.clientWidth - 80;
+    function animate(now) {
+        if (!raceRunning) return;
+        const elapsed = now - raceStartTime;
+        const remaining = Math.max(0, raceDurationMs - elapsed);
+        document.getElementById('race-timer').textContent = formatTime(remaining);
+        const t = Math.min(1, elapsed / raceDurationMs);
+        raceDucks.forEach((d, i) => {
+            if (d.finished) return;
+            const eased = 1 - Math.pow(1 - t, d.curve);
+            let pos = d.progressAtEnd * eased * d.boost;
+            if (pos > 100) pos = 100;
+            const wobble = Math.sin(now / 200 + i) * 2;
+            d.position = pos;
+            d.el.style.transform = `translateX(${(pos / 100) * poolWidth + wobble}px)`;
+            if (pos >= 100 && !d.finished) {
+                d.finished = true;
+                d.el.querySelector('.duck-place').textContent = '#' + raceDucks.filter(x => x.finished).length;
+                if (d.isWinner && !raceWinnerDeclared) raceWinnerDeclared = true;
+            }
+        });
+        if (elapsed >= raceDurationMs) {
+            raceRunning = false;
+            const winner = raceDucks.find(d => d.isWinner);
+            if (winner && !raceWinnerDeclared) { raceWinnerDeclared = true; finishRace(winner.username); }
+            return;
+        }
+        raceRAF = requestAnimationFrame(animate);
+    }
+    raceRAF = requestAnimationFrame(animate);
+}
+
+function finishRace(winner) {
+    setTimeout(() => {
+        raceRunning = false;
+        if (raceRAF) { cancelAnimationFrame(raceRAF); raceRAF = null; }
+        document.getElementById('race-track').classList.remove('active');
+        document.getElementById('speed-hint').style.display = 'none';
+        giveawayActive = false;
+        addSystemMessage(`🏆 ПОБЕДИТЕЛЬ ГОНКИ: ${winner}`);
+        winnersBase.add(winner);
+        addParticipantHistory(winner, 'win_ducks');
+        saveAll();
+        addWinnerToLog(winner);
+        showWinnerModal(winner);
+    }, 600);
+}
+
+const WHEEL_COLORS = ['#7c3aed','#a855f7','#c084fc','#9333ea','#6d28d9','#8b5cf6','#d8b4fe','#5b21b6','#a78bfa','#e9d5ff','#4c1d95','#c4b5fd','#8e44ad','#9b59b6','#bb8fce','#d2b4de'];
+
+function startWheel() {
+    if (wheelRunning) { addSystemMessage('⚠️ Колесо уже крутится!'); return; }
+    wheelParticipants = Array.from(participants);
+    if (wheelParticipants.length === 0) { addSystemMessage('❌ Нет участников!'); return; }
+    giveawayActive = true;
+    addSystemMessage('🎡 Колесо фортуны!');
+    wheelDurationMs = 35000;
+    wheelAngle = 0;
+    wheelWinnerDeclared = false;
+    wheelRunning = false;
+    document.getElementById('wheel-track').classList.add('active');
+    document.getElementById('wheel-center-btn').disabled = false;
+    document.getElementById('wheel-center-btn').textContent = 'КРУТИТЬ';
+    drawWheel();
+}
+
+function drawWheel() {
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    const cx = w / 2, cy = h / 2;
+    const radius = Math.min(cx, cy) - 10;
+    const n = wheelParticipants.length;
+    const anglePerSlice = (Math.PI * 2) / n;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    ctx.setTransform(1, 0, 0, 1, cx, cy);
+    ctx.rotate(wheelAngle);
+    for (let i = 0; i < n; i++) {
+        const startAngle = i * anglePerSlice;
+        const endAngle = startAngle + anglePerSlice;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
+        ctx.fill();
+        ctx.strokeStyle = '#050309';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.save();
+        ctx.rotate(startAngle + anglePerSlice / 2);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 20px "Segoe UI", Arial';
+        ctx.shadowColor = 'rgba(0,0,0,.9)';
+        ctx.shadowBlur = 6;
+        const text = wheelParticipants[i];
+        ctx.fillText(text.length > 14 ? text.slice(0, 14) + '…' : text, radius - 20, 0);
+        ctx.restore();
+    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function spinWheel() {
+    if (wheelRunning) return;
+    wheelRunning = true;
+    document.getElementById('wheel-center-btn').disabled = true;
+    document.getElementById('wheel-center-btn').textContent = '...';
+    addSystemMessage('🎡 Колесо крутится!');
+    wheelStartTime = performance.now();
+    const startAngle = wheelAngle;
+    const totalRotation = (Math.PI * 2) * (8 + Math.random() * 4) + Math.random() * Math.PI * 2;
+    const n = wheelParticipants.length;
+    const anglePerSlice = (Math.PI * 2) / n;
+    let winnerIndex = Math.floor(Math.random() * n);
+    if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'wheel')) {
+        const target = forceWinner.nick.toLowerCase();
+        const idx = wheelParticipants.findIndex(p => p.toLowerCase() === target);
+        if (idx !== -1) winnerIndex = idx;
+    }
+    const winnerSliceCenter = winnerIndex * anglePerSlice + anglePerSlice / 2;
+    const targetMod = ((-winnerSliceCenter - startAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+    const adjustedRotation = totalRotation - (totalRotation % (Math.PI * 2)) + targetMod;
+    function animate(now) {
+        if (!wheelRunning) return;
+        const elapsed = now - wheelStartTime;
+        const t = Math.min(1, elapsed / wheelDurationMs);
+        const eased = 1 - Math.pow(1 - t, 4);
+        wheelAngle = startAngle + adjustedRotation * eased;
+        drawWheel();
+        if (t >= 1) {
+            wheelRunning = false;
+            const winner = wheelParticipants[winnerIndex];
+            document.getElementById('wheel-center-btn').textContent = 'ГОТОВО';
+            finishWheel(winner);
+            return;
+        }
+        wheelRAF = requestAnimationFrame(animate);
+    }
+    wheelRAF = requestAnimationFrame(animate);
+}
+
+function finishWheel(winner) {
+    setTimeout(() => {
+        document.getElementById('wheel-track').classList.remove('active');
+        giveawayActive = false;
+        addSystemMessage(`🏆 ПОБЕДИТЕЛЬ КОЛЕСА: ${winner}`);
+        winnersBase.add(winner);
+        addParticipantHistory(winner, 'win_wheel');
+        saveAll();
+        addWinnerToLog(winner);
+        showWinnerModal(winner);
+    }, 800);
+}
+
+function updateWinnerMessageCount() {
+    const el = document.getElementById('winner-messages-count');
+    if (el) el.textContent = winnerMessages.length;
+}
+
+function showWinnerModal(username) {
+    try {
+        currentWinner = username;
+        winnerMessages = [];
+        winnerTimerStopped = false;
+        winnerTimerSeconds = 0;
+        const lastMsg = lastMessages.get(username.toLowerCase());
+        document.getElementById('winner-last-msg').textContent = lastMsg ? lastMsg.text : '—';
+        document.getElementById('winner-last-date').textContent = lastMsg ? lastMsg.date : '—';
+        document.getElementById('winner-name').textContent = username;
+        document.getElementById('winner-messages-count').textContent = '0';
+        document.getElementById('winner-messages-list').innerHTML = `<div class="empty"><div class="loader-circle"></div><div class="empty-text">Ожидание сообщений...</div></div>`;
+        const timerEl = document.getElementById('winner-timer');
+        timerEl.textContent = '00:00';
+        timerEl.className = 'timer-badge';
+        document.getElementById('following-link').href = `https://followage.showmasterokda.com/?user=${encodeURIComponent(username)}`;
+        document.getElementById('winner-modal').style.display = 'flex';
+        if (winnerTimerInterval) clearInterval(winnerTimerInterval);
+        winnerTimerInterval = setInterval(() => {
+            if (winnerTimerStopped) return;
+            winnerTimerSeconds++;
+            const mins = String(Math.floor(winnerTimerSeconds / 60)).padStart(2,'0');
+            const secs = String(winnerTimerSeconds % 60).padStart(2,'0');
+            timerEl.textContent = `${mins}:${secs}`;
+        }, 1000);
+    } catch (err) {
+        console.error('Ошибка окна победителя:', err);
+    }
+}
+
+function closeWinnerModal() {
+    document.getElementById('winner-modal').style.display = 'none';
+    if (winnerTimerInterval) { clearInterval(winnerTimerInterval); winnerTimerInterval = null; }
+}
+function openUserCard() { if (currentWinner) window.open(`https://www.twitch.tv/popout/${CHANNEL_NAME}/viewercard/${currentWinner}`, '_blank'); }
+
+function rerollWinner() {
+    if (!currentWinner) return;
+    participants.delete(currentWinner);
+    participantCount = participants.size;
+    document.getElementById('participants-count').textContent = participantCount;
+    closeWinnerModal();
+    if (participants.size === 0) { addSystemMessage('⚠️ Больше нет участников для реролла.'); return; }
+    if (!raceMode && !wheelMode) {
+        const arr = Array.from(participants);
+        let newWinner = null;
+        if (forceWinner && forceWinner.nick && (forceWinner.mode === 'all' || forceWinner.mode === 'messages')) {
+            const target = forceWinner.nick.toLowerCase();
+            newWinner = arr.find(p => p.toLowerCase() === target) || null;
+        }
+        if (!newWinner) newWinner = arr[Math.floor(Math.random() * arr.length)];
+        addSystemMessage(`🔄 Реролл: новый победитель — ${newWinner}`);
+        winnersBase.add(newWinner);
+        addParticipantHistory(newWinner, 'reroll_messages');
+        saveAll();
+        addWinnerToLog(newWinner);
+        showWinnerModal(newWinner);
+        return;
+    }
+    if (raceMode) {
+        addSystemMessage('🔄 Реролл — новая гонка!');
+        raceRunning = false;
+        if (raceRAF) { cancelAnimationFrame(raceRAF); raceRAF = null; }
+        document.getElementById('race-track').classList.remove('active');
+        giveawayActive = false;
+        setTimeout(() => startDuckRace(), 300);
+        return;
+    }
+    if (wheelMode) {
+        addSystemMessage('🔄 Реролл — новое вращение!');
+        wheelRunning = false;
+        if (wheelRAF) { cancelAnimationFrame(wheelRAF); wheelRAF = null; }
+        document.getElementById('wheel-track').classList.remove('active');
+        giveawayActive = false;
+        setTimeout(() => startWheel(), 300);
+        return;
+    }
+}
+
+async function updateViewerCount() {
+    try {
+        const apiUrl = `https://decapi.me/twitch/viewercount/${CHANNEL_NAME}`;
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+        const response = await fetch(proxyUrl);
+        const text = (await response.text()).trim();
+        const viewerCountEl = document.getElementById('viewer-count');
+        const onlineDot = document.getElementById('online-dot');
+        if (text.toLowerCase().includes('offline') || isNaN(parseInt(text))) {
+            viewerCountEl.textContent = '0';
+            onlineDot.classList.remove('live');
+        } else {
+            viewerCountEl.textContent = text;
+            onlineDot.classList.add('live');
+        }
+    } catch (e) {
+        document.getElementById('viewer-count').textContent = '0';
+        document.getElementById('online-dot').classList.remove('live');
+    }
+}
+function startViewerTracking() {
+    updateViewerCount();
+    if (viewerInterval) clearInterval(viewerInterval);
+    viewerInterval = setInterval(updateViewerCount, 30000);
+}
+
+function connectToTwitchChat() {
+    connectionId++;
+    const myConnectionId = connectionId;
+    const anonUsername = 'justinfan' + Math.floor(Math.random() * 90000 + 1000);
+    const randomPass = Math.random().toString(36).substring(2, 15);
+    ws = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+    ws.onopen = function() {
+        ws.send('PASS ' + randomPass);
+        ws.send('NICK ' + anonUsername);
+        ws.send('CAP REQ :twitch.tv/tags');
+        ws.send('JOIN #' + CHANNEL_NAME);
+        isConnected = true;
+        document.getElementById('chat-messages').innerHTML = '';
+        addSystemMessage(`✅ Подключено к чату ${CHANNEL_NAME}`);
+        document.getElementById('online-dot').classList.add('live');
+    };
+    ws.onmessage = function(event) {
+        if (myConnectionId !== connectionId) return;
+        const data = event.data;
+        if (data.startsWith('PING')) { ws.send('PONG :tmi.twitch.tv'); return; }
+        const lines = data.split('\r\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].indexOf('PRIVMSG') !== -1) handleChatMessage(lines[i]);
+        }
+    };
+    ws.onerror = function() { if (myConnectionId === connectionId) addSystemMessage('❌ Ошибка подключения.'); };
+    ws.onclose = function() {
+        if (myConnectionId !== connectionId) return;
+        isConnected = false;
+        document.getElementById('online-dot').classList.remove('live');
+        addSystemMessage('⚠️ Соединение потеряно. Переподключение...');
+        reconnectTimeout = setTimeout(() => {
+            if (document.getElementById('main-screen').style.display === 'flex') connectToTwitchChat();
+        }, 2000);
+    };
+}
+
+function handleChatMessage(line) {
+    let tagsPart = '';
+    let rest = line;
+    if (line.startsWith('@')) {
+        const spaceIdx = line.indexOf(' ');
+        tagsPart = line.substring(1, spaceIdx);
+        rest = line.substring(spaceIdx + 1);
+    }
+    const parts = rest.split(' ');
+    if (parts.length < 4) return;
+    let username = parts[0];
+    if (username.charCodeAt(0) === 58) username = username.substring(1);
+    const exIdx = username.indexOf('!');
+    if (exIdx !== -1) username = username.substring(0, exIdx);
+    const msgStart = rest.indexOf(' :', rest.indexOf('PRIVMSG'));
+    if (msgStart === -1) return;
+    const message = rest.substring(msgStart + 2);
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    const dateStr = now.toLocaleDateString('ru-RU') + ' ' + timeStr;
+    const uniqueKey = username + '|' + message + '|' + Math.floor(Date.now() / 1000);
+    if (processedMessages.has(uniqueKey)) return;
+    processedMessages.add(uniqueKey);
+    if (processedMessages.size > 500) {
+        const firstKeys = Array.from(processedMessages).slice(0, 250);
+        firstKeys.forEach(k => processedMessages.delete(k));
+    }
+    let isMod = false, isVip = false, isFirstMsg = false, displayName = username, userColor = '#c084fc';
+    if (tagsPart) {
+        const tagPairs = tagsPart.split(';');
+        for (let i = 0; i < tagPairs.length; i++) {
+            const pair = tagPairs[i].split('=');
+            if (pair[0] === 'mod' && pair[1] === '1') isMod = true;
+            if (pair[0] === 'vip' && pair[1] === '1') isVip = true;
+            if (pair[0] === 'first-msg' && pair[1] === '1') isFirstMsg = true;
+            if (pair[0] === 'display-name' && pair[1]) displayName = pair[1];
+            if (pair[0] === 'color' && pair[1]) userColor = pair[1];
+        }
+    }
+    lastMessages.set(username.toLowerCase(), { text: message, time: timeStr, date: dateStr });
+    if (message.toLowerCase().trim() === '!speed' && raceRunning) {
+        const duck = raceDucks.find(d => d.username === username);
+        if (duck && speedCounters[username] < 5) {
+            duck.boost = (duck.boost || 1) * 1.15;
+            speedCounters[username]++;
+            addSystemMessage(`⚡ ${displayName} ускорил утку (${speedCounters[username]}/5)`);
+            queueMessage(displayName, username, message, '#c084fc', false, isVip, isMod, isFirstMsg);
+            return;
+        }
+    }
+    if (currentWinner && username.toLowerCase() === currentWinner.toLowerCase()) {
+        document.getElementById('winner-last-msg').textContent = message;
+        document.getElementById('winner-last-date').textContent = dateStr;
+        if (!winnerTimerStopped) {
+            winnerTimerStopped = true;
+            document.getElementById('winner-timer').className = 'timer-badge answered';
+        }
+        winnerMessages.push({ text: message, time: timeStr });
+        updateWinnerMessagesList();
+        updateWinnerMessageCount();
+        queueMessage(displayName, username, message, '#c084fc', true, isVip, isMod, isFirstMsg);
+        return;
+    }
+    if (giveawayActive) {
+        queueMessage(displayName, username, message, userColor, false, isVip, isMod, isFirstMsg);
+        return;
+    }
+    const isNew = !winnersBase.has(username);
+    const cbAll = document.getElementById('cb-all').checked;
+    const cbFm = document.getElementById('cb-fm').checked;
+    const cbNew = document.getElementById('cb-new').checked;
+    const keyword = (document.getElementById('keyword-input').value || '').toLowerCase().trim();
+    const hasKeyword = keyword && message.toLowerCase().includes(keyword);
+    const keywordEmpty = !keyword;
+    let shouldRegister = false;
+    if (keywordEmpty) shouldRegister = true;
+    else if (hasKeyword) shouldRegister = true;
+    if (shouldRegister) {
+        if (cbFm && !isFirstMsg) shouldRegister = false;
+        if (cbNew && !isNew) shouldRegister = false;
+        if (cbAll && !hasKeyword) shouldRegister = true;
+    }
+    if (shouldRegister && !participants.has(username)) {
+        participants.add(username);
+        participantCount++;
+        const c = document.getElementById('participants-count');
+        c.textContent = participantCount;
+        c.classList.add('pulse');
+        setTimeout(() => c.classList.remove('pulse'), 400);
+        addParticipantHistory(username, 'registered');
+    }
+    queueMessage(displayName, username, message, userColor, false, isVip, isMod, isFirstMsg);
+}
+
+function queueMessage(username, usernameRaw, message, color, isWinner, isVip, isMod, isFirst) {
+    messageQueue.push({ username, usernameRaw, message, color, isWinner, isVip, isMod, isFirst });
+    if (!flushScheduled) { flushScheduled = true; requestAnimationFrame(flushMessages); }
+}
+const VIP_BADGE_SVG = '<svg class="badge-img" viewBox="0 0 20 20"><rect width="20" height="20" rx="3" fill="#a855f7"/><path d="M10 4 L15 9 L10 16 L5 9 Z" fill="white"/></svg>';
+const MOD_BADGE_SVG = '<svg class="badge-img" viewBox="0 0 20 20"><rect width="20" height="20" rx="3" fill="#7c3aed"/><path d="M4 16 L8 12 L6 10 L4 12 L3 11 L5 9 L13 4 L16 7 L11 15 L9 17 L8 16 L10 14 L8 12 L4 16 Z" fill="white"/></svg>';
+const PARTICIPANT_BADGE = '<span class="participant-badge">УЧАСТНИК</span>';
+
+function flushMessages() {
+    const chatMessages = document.getElementById('chat-messages');
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < messageQueue.length; i++) {
+        const msg = messageQueue[i];
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message' + (msg.isWinner ? ' win' : '') + (msg.isFirst ? ' fm-message' : '');
+        if (msg.isFirst) {
+            const fmLabel = document.createElement('div');
+            fmLabel.className = 'fm-label';
+            fmLabel.textContent = 'FIRST MESSAGE';
+            msgDiv.appendChild(fmLabel);
+        }
+        if (msg.isMod) { const s = document.createElement('span'); s.innerHTML = MOD_BADGE_SVG; msgDiv.appendChild(s.firstChild); }
+        if (msg.isVip) { const s = document.createElement('span'); s.innerHTML = VIP_BADGE_SVG; msgDiv.appendChild(s.firstChild); }
+        if (participants.has(msg.usernameRaw)) {
+            const p = document.createElement('span');
+            p.innerHTML = PARTICIPANT_BADGE;
+            msgDiv.appendChild(p.firstChild);
+        }
+        const nickSpan = document.createElement('span');
+        nickSpan.className = 'nick';
+        nickSpan.style.color = msg.color;
+        nickSpan.textContent = msg.username + ':';
+        const textSpan = document.createElement('span');
+        textSpan.className = 'text';
+        textSpan.textContent = msg.message;
+        msgDiv.appendChild(nickSpan);
+        msgDiv.appendChild(textSpan);
+        fragment.appendChild(msgDiv);
+    }
+    chatMessages.appendChild(fragment);
+    while (chatMessages.children.length > 100) chatMessages.removeChild(chatMessages.firstChild);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    messageQueue = [];
+    flushScheduled = false;
+}
+
+function updateWinnerMessagesList() {
+    const list = document.getElementById('winner-messages-list');
+    const count = document.getElementById('winner-messages-count');
+    if (winnerMessages.length === 0) {
+        list.innerHTML = `<div class="empty"><div class="loader-circle"></div><div class="empty-text">Ожидание сообщений...</div></div>`;
+        count.textContent = '0';
+        return;
+    }
+    count.textContent = winnerMessages.length;
+    list.innerHTML = winnerMessages.map(m => `<div class="winner-message-item"><span class="time">${m.time}</span>${m.text}</div>`).join('');
+}
+
+function addSystemMessage(text) {
+    const chatMessages = document.getElementById('chat-messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message system';
+    msgDiv.textContent = text;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function formatTime(ms) {
+    const totalSec = Math.max(0, Math.floor(ms / 1000));
+    const min = String(Math.floor(totalSec / 60)).padStart(2, '0');
+    const sec = String(totalSec % 60).padStart(2, '0');
+    return `${min}:${sec}`;
 }
 </script>
 </body>
