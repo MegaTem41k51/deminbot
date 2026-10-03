@@ -1,217 +1,204 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>РАЗРАБОТЧИК ПОШЕЛ СПАТЬ</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            font-family: 'Impact', 'Arial Black', sans-serif;
-            overflow: hidden;
-            padding: 20px;
-        }
-
-        /* Психоделический рубленный фон */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: -50%;
-            background: conic-gradient(
-                from 0deg,
-                #ff0000, #ff8000, #ffff00, #80ff00,
-                #00ff00, #00ff80, #00ffff, #0080ff,
-                #0000ff, #8000ff, #ff00ff, #ff0080,
-                #ff0000
-            );
-            animation: rotateBg 4s linear infinite;
-            filter: blur(80px);
-            opacity: 0.7;
-            z-index: 0;
-        }
-
-        @keyframes rotateBg {
-            to { transform: rotate(360deg); }
-        }
-
-        .window {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 900px;
-            background: rgba(0, 0, 0, 0.85);
-            border: 6px solid #fff;
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            box-shadow:
-                0 0 40px #ff00ff,
-                0 0 80px #00ffff,
-                inset 0 0 60px rgba(255, 0, 255, 0.3);
-            animation: windowPulse 1.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes windowPulse {
-            from {
-                box-shadow:
-                    0 0 40px #ff00ff,
-                    0 0 80px #00ffff,
-                    inset 0 0 60px rgba(255, 0, 255, 0.3);
-            }
-            to {
-                box-shadow:
-                    0 0 60px #00ffff,
-                    0 0 120px #ff00ff,
-                    inset 0 0 80px rgba(0, 255, 255, 0.4);
-            }
-        }
-
-        h1 {
-            font-size: clamp(1.5rem, 5vw, 3.5rem);
-            line-height: 1.1;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            background: linear-gradient(
-                90deg,
-                #ff0000, #ff8000, #ffff00, #00ff00,
-                #00ffff, #0080ff, #8000ff, #ff00ff, #ff0000
-            );
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: rainbowText 2s linear infinite;
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
-            margin-bottom: 20px;
-        }
-
-        @keyframes rainbowText {
-            to { background-position: 200% center; }
-        }
-
-        .name {
-            display: block;
-            font-size: clamp(2rem, 8vw, 5rem);
-            font-weight: 900;
-            letter-spacing: 6px;
-            margin: 25px 0;
-            color: #fff;
-            text-shadow:
-                0 0 10px #ff00ff,
-                0 0 20px #ff00ff,
-                0 0 40px #ff00ff,
-                0 0 80px #00ffff,
-                0 0 120px #00ffff;
-            animation: nameGlitch 0.3s infinite;
-        }
-
-        @keyframes nameGlitch {
-            0%, 100% {
-                transform: translate(0, 0) skew(0deg);
-                text-shadow:
-                    0 0 10px #ff00ff,
-                    0 0 20px #ff00ff,
-                    0 0 40px #ff00ff,
-                    0 0 80px #00ffff;
-            }
-            25% {
-                transform: translate(-3px, 2px) skew(2deg);
-                text-shadow:
-                    3px 0 0 #00ffff,
-                    -3px 0 0 #ff00ff,
-                    0 0 30px #ffff00;
-            }
-            50% {
-                transform: translate(3px, -2px) skew(-2deg);
-                text-shadow:
-                    -3px 0 0 #ff0000,
-                    3px 0 0 #00ff00,
-                    0 0 40px #ffffff;
-            }
-            75% {
-                transform: translate(-2px, -3px) skew(1deg);
-                text-shadow:
-                    2px 0 0 #ffff00,
-                    -2px 0 0 #00ffff,
-                    0 0 30px #ff00ff;
-            }
-        }
-
-        h2 {
-            font-size: clamp(1.2rem, 4vw, 2.2rem);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            color: #00ff00;
-            text-shadow:
-                0 0 15px #00ff00,
-                0 0 30px #00ff00,
-                0 0 45px #00ffff;
-            margin-top: 10px;
-        }
-
-        .time {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-            font-family: 'Courier New', monospace;
-            font-size: clamp(0.9rem, 2vw, 1.3rem);
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: #fff;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px 25px;
-            border: 2px solid #00ffff;
-            border-radius: 50px;
-            text-shadow: 0 0 15px #00ffff;
-            box-shadow:
-                0 0 20px #00ffff,
-                inset 0 0 15px rgba(0, 255, 255, 0.3);
-            white-space: nowrap;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>deminaleksey | Админка</title>
+<link rel="icon" type="image/png" href="https://static-cdn.jtvnw.net/jtv_user_pictures/7b27fc4a-fdbd-4590-a2dd-d3d10a2c0f9a-profile_image-70x70.png">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI','Inter',Tahoma,sans-serif; user-select:none; }
+body { background:#050309; color:#f5f5f5; min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; background-image: radial-gradient(circle at 15% 10%, rgba(168,85,247,.28), transparent 45%), radial-gradient(circle at 85% 85%, rgba(124,58,237,.22), transparent 50%), repeating-linear-gradient(45deg,#050309,#050309 40px,#0b0714 40px,#0b0714 80px); }
+.admin-wrap { width:100%; max-width:560px; }
+.admin-card { background:linear-gradient(180deg,#14101f 0%,#0d0916 100%); border-radius:24px; overflow:hidden; border:1px solid #a855f7; box-shadow:0 0 80px rgba(124,58,237,.5), 0 30px 60px rgba(0,0,0,.8); animation:popIn .4s cubic-bezier(.2,1.4,.5,1); position:relative; }
+@keyframes popIn { from { transform:scale(.9); opacity:0; } to { transform:scale(1); opacity:1; } }
+.admin-header { background:linear-gradient(135deg,#a855f7,#7c3aed); padding:22px 26px; display:flex; justify-content:space-between; align-items:center; position:relative; }
+.admin-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent); }
+.admin-header h1 { color:#fff; font-size:20px; font-weight:900; letter-spacing:.5px; }
+.admin-header .lock { font-size:22px; }
+.admin-body { padding:26px; display:flex; flex-direction:column; gap:18px; }
+.section { background:linear-gradient(145deg,#1a1428,#120e1c); border:1px solid #2a1f42; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:12px; }
+.section .title { font-size:13px; color:#c084fc; font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
+.section .desc { font-size:12px; color:#a99fbb; line-height:1.5; }
+.field { display:flex; flex-direction:column; gap:6px; }
+.field label { font-size:11px; color:#c084fc; text-transform:uppercase; letter-spacing:.8px; font-weight:800; }
+.field input { width:100%; padding:13px 15px; background:linear-gradient(145deg,#0d0916,#0a0712); border:1px solid #2a1f42; border-radius:12px; color:#f5f5f5; font-size:14px; outline:none; transition:.25s; }
+.field input:focus { border-color:#a855f7; background:#171226; box-shadow:0 0 0 4px rgba(168,85,247,.15), 0 0 18px rgba(168,85,247,.3); }
+.btn { width:100%; padding:15px; border:none; border-radius:14px; font-size:14px; font-weight:800; cursor:pointer; letter-spacing:.4px; transition:.25s; color:#fff; display:flex; align-items:center; justify-content:center; gap:8px; position:relative; overflow:hidden; }
+.btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent); transition:.6s; }
+.btn:hover::before { left:100%; }
+.btn-primary { background:linear-gradient(135deg,#a855f7,#7c3aed); box-shadow:0 8px 22px rgba(124,58,237,.4); }
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(168,85,247,.6); }
+.btn-danger { background:linear-gradient(135deg,#ff4d6d,#c81e4a); box-shadow:0 8px 22px rgba(255,77,109,.35); }
+.btn-danger:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(255,77,109,.55); }
+.btn-warn { background:linear-gradient(135deg,#f59e0b,#d97706); box-shadow:0 8px 22px rgba(245,158,11,.35); }
+.btn-warn:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(245,158,11,.55); }
+.status { padding:14px 18px; border-radius:12px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:10px; border:1px solid; }
+.status.active { background:linear-gradient(90deg,rgba(168,85,247,.25),rgba(168,85,247,.05)); border-color:#a855f7; color:#e9d5ff; }
+.status.empty { background:linear-gradient(90deg,rgba(255,77,109,.15),transparent); border-color:#3a2b55; color:#a99fbb; }
+.status .dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.status.active .dot { background:#a855f7; box-shadow:0 0 12px #a855f7; animation:dotPulse 1.5s infinite; }
+.status.empty .dot { background:#555; }
+@keyframes dotPulse { 0%,100% { box-shadow:0 0 8px #a855f7; } 50% { box-shadow:0 0 16px #a855f7, 0 0 24px #a855f7; } }
+.mode-tabs { display:flex; gap:8px; }
+.mode-tab { flex:1; padding:11px; text-align:center; cursor:pointer; background:linear-gradient(145deg,#0d0916,#0a0712); border:2px solid #2a1f42; border-radius:12px; font-size:12px; font-weight:800; color:#a99fbb; transition:.25s; letter-spacing:.3px; }
+.mode-tab:hover { border-color:#7c3aed; color:#c084fc; }
+.mode-tab.active { background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; border-color:#a855f7; box-shadow:0 0 20px rgba(168,85,247,.5); }
+.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; padding:14px 26px; border-radius:14px; font-size:13px; font-weight:800; letter-spacing:.3px; box-shadow:0 12px 40px rgba(168,85,247,.6); opacity:0; transition:.35s cubic-bezier(.2,1.4,.5,1); z-index:9999; pointer-events:none; }
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+.toast.danger { background:linear-gradient(135deg,#ff4d6d,#c81e4a); box-shadow:0 12px 40px rgba(255,77,109,.6); }
+</style>
 </head>
 <body>
 
-    <div class="window">
-        <h1>РАЗРАБОТЧИК<br>ПОШЕЛ СПАТЬ</h1>
+<div class="admin-wrap">
+    <div class="admin-card">
+        <div class="admin-header">
+            <h1>⚙️ АДМИН-ПАНЕЛЬ</h1>
+            <span class="lock">🔒</span>
+        </div>
 
-        <span class="name">DEMINALEKSEY ТЫ ПИДОРАС И НЕГРИТОС</span>
+        <div class="admin-body">
 
-        <h2>ИДИ СРАТЬ И СПАТЬ</h2>
+            <div class="section">
+                <div class="title">🎯 Форс-победитель</div>
+                <div class="desc">Задай ник, который гарантированно выиграет в следующем розыгрыше. Регистр не важен.</div>
+
+                <div class="field">
+                    <label>Ник на Twitch</label>
+                    <input type="text" id="force-nick" placeholder="например: username">
+                </div>
+
+                <div class="field">
+                    <label>Действует для режима</label>
+                    <div class="mode-tabs">
+                        <div class="mode-tab active" data-mode="all" onclick="selectMode(this)">ВСЕ</div>
+                        <div class="mode-tab" data-mode="messages" onclick="selectMode(this)">💬</div>
+                        <div class="mode-tab" data-mode="ducks" onclick="selectMode(this)">🦆</div>
+                        <div class="mode-tab" data-mode="wheel" onclick="selectMode(this)">🎡</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveForceNick()">💾 Установить форс-победителя</button>
+                <button class="btn btn-danger" onclick="clearForceNick()">🗑️ Убрать форс</button>
+
+                <div class="status empty" id="force-status">
+                    <span class="dot"></span>
+                    <span id="force-status-text">Форс не задан</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="title">🏆 История побед</div>
+                <div class="desc">Очистка истории побед и базы победителей (используется для фильтра "NEW").</div>
+
+                <div class="status empty" id="winners-status">
+                    <span class="dot"></span>
+                    <span id="winners-status-text">Загрузка...</span>
+                </div>
+
+                <button class="btn btn-warn" onclick="clearWinnersLog()">📜 Очистить историю побед</button>
+                <button class="btn btn-danger" onclick="clearWinnersBase()">💥 Очистить базу победителей (NEW)</button>
+                <button class="btn btn-danger" onclick="clearAll()">☠️ Очистить ВСЁ (история + база)</button>
+            </div>
+
+        </div>
     </div>
+</div>
 
-    <div class="time" id="clock">ВРЕМЯ УЖЕ</div>
+<div class="toast" id="toast"></div>
 
-    <script>
-        function updateClock() {
-            const now = new Date();
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = { databaseURL: "https://malibash-8e9ef-default-rtdb.firebaseio.com" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-            // Получаем московское время (UTC+3)
-            const msk = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (3 * 3600000));
+let currentMode = 'all';
 
-            const hh = String(msk.getHours()).padStart(2, '0');
-            const mm = String(msk.getMinutes()).padStart(2, '0');
-            const ss = String(msk.getSeconds()).padStart(2, '0');
+function selectMode(el) {
+    document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentMode = el.dataset.mode;
+}
 
-            document.getElementById('clock').textContent =
-                `ВРЕМЯ УЖЕ: ${hh}:${mm}:${ss}`;
-        }
+function showToast(text, danger = false) {
+    const t = document.getElementById('toast');
+    t.textContent = text;
+    t.className = 'toast' + (danger ? ' danger' : '');
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
 
-        updateClock();
-        setInterval(updateClock, 1000);
-    </script>
+db.ref('deminaleksey_panel/forceWinner').on('value', (snap) => {
+    const data = snap.val();
+    const statusEl = document.getElementById('force-status');
+    const textEl = document.getElementById('force-status-text');
+    if (data && data.nick) {
+        statusEl.className = 'status active';
+        const modeLabel = { all:'все режимы', messages:'по сообщениям', ducks:'гонка', wheel:'колесо' }[data.mode || 'all'];
+        textEl.textContent = `🎯 Форс: ${data.nick} (${modeLabel})`;
+        document.getElementById('force-nick').value = data.nick;
+        document.querySelectorAll('.mode-tab').forEach(t => {
+            t.classList.toggle('active', t.dataset.mode === (data.mode || 'all'));
+        });
+        currentMode = data.mode || 'all';
+    } else {
+        statusEl.className = 'status empty';
+        textEl.textContent = 'Форс не задан';
+    }
+});
 
+db.ref('deminaleksey_panel').on('value', (snap) => {
+    const data = snap.val() || {};
+    const base = data.winnersBase || [];
+    const log = data.winnersLog || [];
+    const el = document.getElementById('winners-status');
+    const textEl = document.getElementById('winners-status-text');
+    el.className = 'status active';
+    textEl.textContent = `🏆 В базе: ${base.length} • История: ${log.length}`;
+});
+
+function saveForceNick() {
+    const nick = document.getElementById('force-nick').value.trim();
+    if (!nick) { showToast('⚠️ Введи ник', true); return; }
+    db.ref('deminaleksey_panel/forceWinner').set({
+        nick: nick,
+        mode: currentMode,
+        setAt: new Date().toLocaleString('ru-RU')
+    }).then(() => showToast(`✅ Форс установлен: ${nick}`))
+      .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+}
+
+function clearForceNick() {
+    db.ref('deminaleksey_panel/forceWinner').remove()
+        .then(() => showToast('🗑️ Форс убран'))
+        .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+}
+
+function clearWinnersLog() {
+    if (!confirm('Очистить историю побед? (База для NEW останется)')) return;
+    db.ref('deminaleksey_panel/winnersLog').set([])
+        .then(() => showToast('📜 История побед очищена'))
+        .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+}
+
+function clearWinnersBase() {
+    if (!confirm('Очистить базу победителей? После этого все смогут участвовать в NEW-режиме заново.')) return;
+    db.ref('deminaleksey_panel/winnersBase').set([])
+        .then(() => showToast('💥 База победителей очищена'))
+        .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+}
+
+function clearAll() {
+    if (!confirm('ОЧИСТИТЬ ВСЁ: история побед + база победителей? Это нельзя отменить.')) return;
+    Promise.all([
+        db.ref('deminaleksey_panel/winnersLog').set([]),
+        db.ref('deminaleksey_panel/winnersBase').set([])
+    ]).then(() => showToast('☠️ Всё очищено', true))
+      .catch(e => showToast('❌ Ошибка: ' + e.message, true));
+}
+</script>
 </body>
 </html>
