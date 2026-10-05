@@ -185,15 +185,21 @@ document.getElementById('tts-rate').addEventListener('input', (e) => {
 function sendTTS() {
     const text = document.getElementById('tts-text').value.trim();
     if (!text) { showToast('⚠️ Введи текст', true); return; }
-    const voice = document.getElementById('tts-voice').value;
-    const rate = parseFloat(document.getElementById('tts-rate').value) || 1;
+
+    const voices = speechSynthesis.getVoices();
+    const selectedIndex = document.getElementById('tts-voice').selectedIndex;
+    const selectedVoice = voices[selectedIndex] || null;
+
     db.ref('deminaleksey_panel/tts').set({
         text: text,
-        voice: voice,
-        rate: rate,
+        voiceIndex: selectedIndex,
+        voiceName: selectedVoice ? selectedVoice.name : '',
+        voiceLang: selectedVoice ? selectedVoice.lang : 'ru-RU',
+        voiceURI: selectedVoice ? selectedVoice.voiceURI : '',
+        rate: parseFloat(document.getElementById('tts-rate').value) || 1,
         timestamp: Date.now()
     }).then(() => {
-        showToast('🔊 Сообщение отправлено');
+        showToast('🔊 Отправлено: ' + (selectedVoice ? selectedVoice.name : 'default'));
         document.getElementById('tts-text').value = '';
     }).catch(e => showToast('❌ Ошибка: ' + e.message, true));
 }
