@@ -1335,6 +1335,15 @@ function formatTime(ms) {
 
 /* ====== TTS ====== */
 let lastTTSTimestamp = 0;
+let cachedVoices = [];
+
+function refreshVoices() {
+    cachedVoices = window.speechSynthesis.getVoices();
+}
+if (window.speechSynthesis) {
+    refreshVoices();
+    window.speechSynthesis.onvoiceschanged = refreshVoices;
+}
 
 function initTTSListener() {
     db.ref('deminaleksey_panel/tts').on('value', (snap) => {
@@ -1343,27 +1352,49 @@ function initTTSListener() {
         if (data.timestamp === lastTTSTimestamp) return;
         lastTTSTimestamp = data.timestamp;
 
-        // Стоп
         if (data.stop) {
             window.speechSynthesis.cancel();
             return;
         }
-
         if (!data.text) return;
 
+        // Обновляем список голосов (на случай, если ещё не загрузились)
+        if (!cachedVoices.length) refreshVoices();
+
         const utter = new SpeechSynthesisUtterance(data.text);
-        const voices = window.speechSynthesis.getVoices();
-        if (data.voice) {
-            const found = voices.find(v => v.name === data.voice);
-            if (found) utter.voice = found;
+
+        // Ищем голос по 3 стратегиям:
+        let chosen = null;
+
+        // 1) по voiceURI (самый точный)
+        if (data.voiceURI) {
+            chosen = cachedVoices.find(v => v.voiceURI === data.voiceURI);
         }
+        // 2) по имени
+        if (!chosen && data.voiceName) {
+            chosen = cachedVoices.find(v => v.name === data.voiceName);
+        }
+        // 3) по языку
+        if (!chosen && data.voiceLang) {
+            chosen = cachedVoices.find(v => v.lang === data.voiceLang);
+        }
+        // 4) по индексу
+        if (!chosen && typeof data.voiceIndex === 'number' && cachedVoices[data.voiceIndex]) {
+            chosen = cachedVoices[data.voiceIndex];
+        }
+
+        if (chosen) utter.voice = chosen;
         utter.rate = data.rate || 1;
         utter.pitch = 1;
         utter.volume = 1;
+        utter.lang = chosen ? chosen.lang : (data.voiceLang || 'ru-RU');
+
         window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utter);
+
+        console.log('TTS:', data.text, '| voice:', chosen ? chosen.name : 'default', '| lang:', utter.lang);
     });
-}    
+}
     
 </script>
 </body>
