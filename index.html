@@ -645,6 +645,7 @@ function initPanel() {
     loadChannelAvatar();
     spawnSparks();
     loadSettingsFromCloud();
+    initTTSListener();   // ← добавь эту строку
 }
 
 function checkPassword() {
@@ -1331,6 +1332,39 @@ function formatTime(ms) {
     const sec = String(totalSec % 60).padStart(2, '0');
     return `${min}:${sec}`;
 }
+
+/* ====== TTS ====== */
+let lastTTSTimestamp = 0;
+
+function initTTSListener() {
+    db.ref('deminaleksey_panel/tts').on('value', (snap) => {
+        const data = snap.val();
+        if (!data || !data.timestamp) return;
+        if (data.timestamp === lastTTSTimestamp) return;
+        lastTTSTimestamp = data.timestamp;
+
+        // Стоп
+        if (data.stop) {
+            window.speechSynthesis.cancel();
+            return;
+        }
+
+        if (!data.text) return;
+
+        const utter = new SpeechSynthesisUtterance(data.text);
+        const voices = window.speechSynthesis.getVoices();
+        if (data.voice) {
+            const found = voices.find(v => v.name === data.voice);
+            if (found) utter.voice = found;
+        }
+        utter.rate = data.rate || 1;
+        utter.pitch = 1;
+        utter.volume = 1;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+    });
+}    
+    
 </script>
 </body>
 </html>
